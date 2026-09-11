@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+.env
+data/papers/*.pdf
+data/chunks/*.json
+data/chroma_db/
+!data/papers/.gitkeep
+!data/chunks/.gitkeep
+
+.env
+data/eval/retry_questions.json
+data/eval/retry_questions2.json

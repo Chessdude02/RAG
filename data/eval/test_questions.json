@@ -1,0 +1,82 @@
+[
+  {
+    "question": "How does control-token-augmented Dense Passage Retrieval improve retrieval accuracy?",
+    "relevant_chunk_ids": ["2405.13008v1_1"]
+  },
+  {
+    "question": "What retrieval strategy does MultiRAG use to mitigate hallucination from inconsistent multi-source information?",
+    "relevant_chunk_ids": ["2508.03553v1_32", "2508.03553v1_1", "2508.03553v1_4", "2508.03553v1_31"]
+  },
+  {
+    "question": "How does Blended RAG combine semantic search with hybrid query-based retrievers?",
+    "relevant_chunk_ids": ["2404.07220v2_4", "2404.07220v2_1", "2404.07220v2_5", "2404.07220v2_12"]
+  },
+  {
+    "question": "What does Tree of Reviews propose for multi-hop question answering?",
+    "relevant_chunk_ids": ["2404.14464v1_1", "2404.14464v1_7", "2404.14464v1_4", "2404.14464v1_20"]
+  },
+  {
+    "question": "How do multi-agent architectures coordinate retrieval across diverse data sources?",
+    "relevant_chunk_ids": ["2412.05838v1_20", "2412.05838v1_10", "2412.05838v1_12", "2412.05838v1_1"]
+  },
+  {
+    "question": "What chunking strategies does the \"Reconstructing Context\" paper evaluate for RAG?",
+    "relevant_chunk_ids": ["2504.19754v1_3", "2504.19754v1_4"]
+  },
+  {
+    "question": "How does R²AG incorporate retrieval information back into the generation process?",
+    "relevant_chunk_ids": ["2406.13249v2_22", "2406.13249v2_1", "2406.13249v2_2"]
+  },
+  {
+    "question": "What method does DeepCodeSeek use for real-time API retrieval in code generation?",
+    "relevant_chunk_ids": ["2509.25716v1_13", "2509.25716v1_1", "2509.25716v1_2"]
+  },
+  {
+    "question": "How does the TREC 2025 RAG Track evaluate retrieval-augmented systems?",
+    "relevant_chunk_ids": ["2603.09891v1_1", "2603.09891v1_2", "2603.09891v1_31", "2603.09891v1_20"]
+  },
+  {
+    "question": "What challenges does industry face when deploying RAG systems, per the interview study?",
+    "relevant_chunk_ids": ["2508.14066v1_3", "2508.14066v1_26", "2508.14066v1_1", "2508.14066v1_16", "2508.14066v1_7"]
+  },
+  {
+    "question": "How does the Context Tuning approach improve retrieval-augmented generation?",
+    "relevant_chunk_ids": ["2312.05708v1_0"]
+  },
+  {
+    "question": "What does \"How Do LLMs Cite?\" find about attribution mechanisms in RAG-generated citations?",
+    "relevant_chunk_ids": ["2606.28358v1_3", "2606.28358v1_13", "2606.28358v1_2", "2606.28358v1_14"]
+  },
+  {
+    "question": "How does RAC (Retrieval-Augmented Clarification) improve faithfulness in conversational search?",
+    "relevant_chunk_ids": ["2601.11722v1_19", "2601.11722v1_2", "2601.11722v1_3", "2601.11722v1_8"]
+  },
+  {
+    "question": "What adaptive retrieval strategy is proposed for large reasoning models deciding when to retrieve?",
+    "relevant_chunk_ids": ["2604.26649v1_7", "2604.26649v1_8", "2604.26649v1_15"]
+  },
+  {
+    "question": "How does video-enriched RAG use aligned video captions for retrieval?",
+    "relevant_chunk_ids": ["2405.17706v1_1", "2405.17706v1_7", "2405.17706v1_6", "2405.17706v1_4"]
+  },
+  {
+    "question": "What are common evaluation metrics used to measure RAG system quality across these papers?",
+    "relevant_chunk_ids": ["2605.15790v1_12", "2508.14066v1_22", "2508.14066v1_4", "2412.15404v1_5", "2604.19899v1_9"]
+  },
+  {
+    "question": "What approaches exist for improving retrieval accuracy beyond standard dense passage retrieval?",
+    "relevant_chunk_ids": ["2110.07367v2_6", "2508.09534v1_1", "2410.01383v1_4", "2210.13678v1_6", "2211.14876v1_4"]
+  },
+  {
+    "question": "How does BM25 handle typos and misspelled queries?",
+    "relevant_chunk_ids": []
+  },
+  {
+    "question": "What are the legal requirements for deploying AI systems in the EU under the AI Act?",
+    "relevant_chunk_ids": []
+  },
+  {
+    "question": "How does spatial augmented reality affect user locomotion in physical environments?",
+    "relevant_chunk_ids": ["2510.23840v1_3", "2510.23840v1_2", "2510.23840v1_4", "2510.23840v1_22"]
+  }
+]

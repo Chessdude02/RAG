@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
-# Provisions an Amazon Linux 2023 t3.micro EC2 instance to run the RAG pipeline
+# Provisions an Amazon Linux 2023 t3.small EC2 instance to run the RAG pipeline
 # API under systemd. Run on the instance as root (e.g. `sudo bash provision_ec2.sh`).
+#
+# Instance sizing: use t3.small (2 GB RAM) - see DEPLOYMENT.md "Memory footprint"
+# for measured numbers. Models + BM25 index alone measure ~896 MB RSS, before
+# Chroma's HNSW index, the OS, or a single request - too close to t3.micro's 1 GB
+# ceiling for safe operation (full warmed-up process lands around ~1.0 GB). This
+# script also works on t3.micro, where the swap file below becomes load-bearing
+# rather than a spike buffer - see SWAP_SIZE_MB below. t3.small isn't in the
+# always-free tier (see DEPLOYMENT.md "Cost management") - stop the instance when
+# not in use.
 #
 # Required env var:
 #   REPO_URL - git remote to clone, e.g. https://github.com/you/rag-pipeline.git
@@ -12,8 +21,20 @@ set -euo pipefail
 APP_USER="raguser"
 APP_DIR="/opt/rag-pipeline"
 ENV_DIR="/etc/rag-pipeline"
+# 1 GB, not 2 GB: on the recommended t3.small (2048 MB RAM), the warmed-up app
+# already measures ~1007 MB RSS (see DEPLOYMENT.md "Memory footprint"), leaving
+# ~800-900 MB of real headroom before swap is even touched once Amazon Linux's own
+# baseline (sshd, systemd-journald, etc., roughly 150-200 MB) is accounted for. A
+# 1 GB swap file is a proportionate buffer for transient concurrent-request spikes
+# on top of that, not the load-bearing 2 GB it needed to be on t3.micro, where the
+# same ~1007 MB app footprint alone exceeds the instance's total 1 GB of RAM.
+#
+# Running this on t3.micro instead (unsupported fallback - see DEPLOYMENT.md):
+# override with `SWAP_SIZE_MB=2048 REPO_URL=... sudo -E bash provision_ec2.sh`,
+# since 1 GB of swap on top of only 1 GB of physical RAM isn't enough headroom
+# for a ~1007 MB app footprint plus OS overhead.
 SWAP_FILE="/swapfile"
-SWAP_SIZE_MB=2048
+SWAP_SIZE_MB="${SWAP_SIZE_MB:-1024}"
 
 : "${REPO_URL:?Set REPO_URL to your git remote, e.g. REPO_URL=https://github.com/you/rag-pipeline.git}"
 
@@ -25,7 +46,7 @@ python3 --version  # confirm >= 3.10 before continuing; install python3.11 via d
 echo "== Creating app user =="
 id -u "$APP_USER" &>/dev/null || useradd --system --create-home --shell /usr/sbin/nologin "$APP_USER"
 
-echo "== Setting up swap (t3.micro only has 1GB RAM - embedding model + torch need headroom) =="
+echo "== Setting up ${SWAP_SIZE_MB}MB swap (buffer on t3.small; override SWAP_SIZE_MB=2048 if running on t3.micro, where it's load-bearing) =="
 if [ ! -f "$SWAP_FILE" ]; then
     fallocate -l "${SWAP_SIZE_MB}M" "$SWAP_FILE"
     chmod 600 "$SWAP_FILE"

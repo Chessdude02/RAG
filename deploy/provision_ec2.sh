@@ -40,8 +40,11 @@ SWAP_SIZE_MB="${SWAP_SIZE_MB:-1024}"
 
 echo "== Installing system packages =="
 dnf update -y
-dnf install -y python3 python3-pip git
-python3 --version  # confirm >= 3.10 before continuing; install python3.11 via dnf if not
+# Amazon Linux 2023's default `python3` is 3.9; sentence-transformers==6.0.1 needs
+# >=3.10, so install python3.11 explicitly and use it by name everywhere below
+# rather than relying on whatever `python3` happens to resolve to.
+dnf install -y python3.11 python3.11-pip git
+python3.11 --version
 
 echo "== Creating app user =="
 id -u "$APP_USER" &>/dev/null || useradd --system --create-home --shell /usr/sbin/nologin "$APP_USER"
@@ -66,7 +69,7 @@ else
 fi
 
 echo "== Creating virtualenv and installing dependencies =="
-sudo -u "$APP_USER" python3 -m venv "$APP_DIR/venv"
+sudo -u "$APP_USER" python3.11 -m venv "$APP_DIR/venv"
 sudo -u "$APP_USER" "$APP_DIR/venv/bin/pip" install --upgrade pip
 sudo -u "$APP_USER" "$APP_DIR/venv/bin/pip" install -r "$APP_DIR/requirements.txt"
 

@@ -1,0 +1,72 @@
+# Requires repo secrets on this repo:
+#   ANTHROPIC_API_KEY   - for the eval run
+#   EVAL_HARNESS_TOKEN  - fine-grained PAT with Contents: read on the private
+#                         Chessdude02/eval-harness repo (GITHUB_TOKEN can't read it)
+# Bounded CI cost: runs the fixed ~20-item
+# labeled set plus CACHED (not regenerated) red-team cases, on push to main
+# only.
+name: Eval regression gate
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  eval-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout RAG pipeline
+        uses: actions/checkout@v4
+        with:
+          path: rag-pipeline
+
+      - name: Checkout eval-harness
+        uses: actions/checkout@v4
+        with:
+          repository: Chessdude02/eval-harness
+          token: ${{ secrets.EVAL_HARNESS_TOKEN }}
+          path: eval-harness
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install RAG pipeline dependencies
+        working-directory: rag-pipeline
+        run: pip install -r requirements.txt
+
+      - name: Install eval-harness dependencies
+        working-directory: eval-harness
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-adapters.txt
+
+      - name: Restore results.db (gate baseline from previous runs)
+        uses: actions/cache/restore@v4
+        with:
+          path: eval-harness/results.db
+          key: eval-results-db-${{ github.run_id }}
+          restore-keys: eval-results-db-
+
+      - name: Run eval gate
+        working-directory: eval-harness
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RAG_PIPELINE_DIR: ${{ github.workspace }}/rag-pipeline
+        run: python scripts/run_eval.py --system rag --gate --trigger push
+
+      - name: Save results.db for the next run's baseline
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: eval-harness/results.db
+          key: eval-results-db-${{ github.run_id }}
+
+      - name: Upload results.db
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-db
+          path: eval-harness/results.db

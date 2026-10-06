@@ -1,0 +1,9 @@
+{
+  "chroma_collection": "rag_papers",
+  "chroma_chunk_count": 17881,
+  "chroma_unique_papers": 688,
+  "chunks_json_chunk_count": 17881,
+  "chunks_json_unique_papers": 688,
+  "pdf_files_in_papers_dir": 700,
+  "chroma_matches_chunks_json": true
+}

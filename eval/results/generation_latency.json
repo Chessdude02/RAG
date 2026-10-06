@@ -1,0 +1,218 @@
+{
+  "summary": {
+    "n_queries": 10,
+    "reps_completed": "partial: 25 of 30 calls (rep 1-2 complete for q001-q010, rep 3 complete only for q001-q005)",
+    "n_calls": 25,
+    "model": "claude-sonnet-5",
+    "p50_s": 3.01,
+    "p95_s": 9.675999999999998,
+    "median_s": 3.01,
+    "mean_s": 4.7912,
+    "input_tokens_total": 102046,
+    "output_tokens_total": 11900,
+    "actual_cost_usd": 0.3231,
+    "note": "Run interrupted by Anthropic account credit-balance exhaustion (HTTP 400) after call 25/30. This is a real partial sample recovered from the run log, not simulated."
+  },
+  "per_call": [
+    {
+      "idx": 1,
+      "id": "q001",
+      "rep": 1,
+      "latency_s": 2.64,
+      "input_tokens": 4384,
+      "output_tokens": 199
+    },
+    {
+      "idx": 2,
+      "id": "q002",
+      "rep": 1,
+      "latency_s": 2.28,
+      "input_tokens": 4461,
+      "output_tokens": 166
+    },
+    {
+      "idx": 3,
+      "id": "q003",
+      "rep": 1,
+      "latency_s": 8.08,
+      "input_tokens": 3895,
+      "output_tokens": 1024
+    },
+    {
+      "idx": 4,
+      "id": "q004",
+      "rep": 1,
+      "latency_s": 3.68,
+      "input_tokens": 4033,
+      "output_tokens": 366
+    },
+    {
+      "idx": 5,
+      "id": "q005",
+      "rep": 1,
+      "latency_s": 10.03,
+      "input_tokens": 4119,
+      "output_tokens": 1024
+    },
+    {
+      "idx": 6,
+      "id": "q006",
+      "rep": 1,
+      "latency_s": 9.02,
+      "input_tokens": 3715,
+      "output_tokens": 1024
+    },
+    {
+      "idx": 7,
+      "id": "q007",
+      "rep": 1,
+      "latency_s": 2.14,
+      "input_tokens": 3835,
+      "output_tokens": 149
+    },
+    {
+      "idx": 8,
+      "id": "q008",
+      "rep": 1,
+      "latency_s": 1.59,
+      "input_tokens": 3541,
+      "output_tokens": 99
+    },
+    {
+      "idx": 9,
+      "id": "q009",
+      "rep": 1,
+      "latency_s": 2.25,
+      "input_tokens": 4256,
+      "output_tokens": 127
+    },
+    {
+      "idx": 10,
+      "id": "q010",
+      "rep": 1,
+      "latency_s": 3.95,
+      "input_tokens": 4338,
+      "output_tokens": 347
+    },
+    {
+      "idx": 11,
+      "id": "q001",
+      "rep": 2,
+      "latency_s": 2.87,
+      "input_tokens": 4384,
+      "output_tokens": 199
+    },
+    {
+      "idx": 12,
+      "id": "q002",
+      "rep": 2,
+      "latency_s": 2.6,
+      "input_tokens": 4461,
+      "output_tokens": 244
+    },
+    {
+      "idx": 13,
+      "id": "q003",
+      "rep": 2,
+      "latency_s": 8.26,
+      "input_tokens": 3895,
+      "output_tokens": 931
+    },
+    {
+      "idx": 14,
+      "id": "q004",
+      "rep": 2,
+      "latency_s": 3.01,
+      "input_tokens": 4033,
+      "output_tokens": 306
+    },
+    {
+      "idx": 15,
+      "id": "q005",
+      "rep": 2,
+      "latency_s": 9.84,
+      "input_tokens": 4119,
+      "output_tokens": 1024
+    },
+    {
+      "idx": 16,
+      "id": "q006",
+      "rep": 2,
+      "latency_s": 8.43,
+      "input_tokens": 3715,
+      "output_tokens": 1024
+    },
+    {
+      "idx": 17,
+      "id": "q007",
+      "rep": 2,
+      "latency_s": 2.12,
+      "input_tokens": 3835,
+      "output_tokens": 160
+    },
+    {
+      "idx": 18,
+      "id": "q008",
+      "rep": 2,
+      "latency_s": 1.82,
+      "input_tokens": 3541,
+      "output_tokens": 96
+    },
+    {
+      "idx": 19,
+      "id": "q009",
+      "rep": 2,
+      "latency_s": 2.51,
+      "input_tokens": 4256,
+      "output_tokens": 170
+    },
+    {
+      "idx": 20,
+      "id": "q010",
+      "rep": 2,
+      "latency_s": 6.86,
+      "input_tokens": 4338,
+      "output_tokens": 600
+    },
+    {
+      "idx": 21,
+      "id": "q001",
+      "rep": 3,
+      "latency_s": 2.86,
+      "input_tokens": 4384,
+      "output_tokens": 260
+    },
+    {
+      "idx": 22,
+      "id": "q002",
+      "rep": 3,
+      "latency_s": 2.57,
+      "input_tokens": 4461,
+      "output_tokens": 172
+    },
+    {
+      "idx": 23,
+      "id": "q003",
+      "rep": 3,
+      "latency_s": 8.59,
+      "input_tokens": 3895,
+      "output_tokens": 1024
+    },
+    {
+      "idx": 24,
+      "id": "q004",
+      "rep": 3,
+      "latency_s": 3.08,
+      "input_tokens": 4033,
+      "output_tokens": 254
+    },
+    {
+      "idx": 25,
+      "id": "q005",
+      "rep": 3,
+      "latency_s": 8.7,
+      "input_tokens": 4119,
+      "output_tokens": 911
+    }
+  ]
+}

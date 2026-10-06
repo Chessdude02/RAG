@@ -23,6 +23,18 @@ TOP_K = 5
 CANDIDATE_POOL = 20  # per-retriever candidates fed into RRF, ahead of the final top-k
 RRF_K = 60
 
+QUERY_CATEGORIES = {"factual", "multi-hop", "out-of-scope"}
+
+QUERY_CLASSIFICATION_PROMPT = """Classify the following user query into exactly one of \
+these three categories:
+- factual: a direct lookup question with a clear answer in one or two chunks
+- multi-hop: requires synthesizing information across multiple chunks or papers
+- out-of-scope: not related to RAG, retrieval, or the paper corpus topics
+
+Respond with only the category name and nothing else.
+
+Query: {query}"""
+
 SYSTEM_PROMPT = """You are a research assistant answering questions using only the \
 provided excerpts from arXiv papers on retrieval-augmented generation.
 
@@ -176,6 +188,28 @@ def extract_text(response: anthropic.types.Message) -> str:
     raise ValueError("No text block found in response.content")
 
 
+def classify_query(query: str, client: anthropic.Anthropic) -> str:
+    """Classify a query as "factual", "multi-hop", or "out-of-scope".
+
+    First-pass heuristic classifier: for now the classification only gates whether
+    retrieval/generation runs at all (out-of-scope queries are short-circuited). It
+    does not yet select a differentiated retrieval strategy per category — "factual"
+    and "multi-hop" both fall through to the same hybrid_retrieve + rerank pipeline.
+    """
+    prompt = QUERY_CLASSIFICATION_PROMPT.format(query=query)
+    response = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=20,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    text = extract_text(response).strip().lower()
+
+    for category in QUERY_CATEGORIES:
+        if category in text:
+            return category
+    return "factual"  # unparseable response: fail open into the normal pipeline
+
+
 def build_context(chunks: list[dict]) -> str:
     blocks = []
     for chunk in chunks:
@@ -202,9 +236,29 @@ def generate_answer(query: str, chunks: list[dict], client: anthropic.Anthropic)
 
 def answer_query(query: str, n_results: int = TOP_K) -> dict:
     """Full retrieve-then-generate pipeline. Returns the answer and retrieved chunks."""
+    client = get_anthropic_client()
+
+    # First-pass heuristic classifier: today this only short-circuits out-of-scope
+    # queries before spending a retrieval+generation call on them. "factual" and
+    # "multi-hop" queries currently share the same hybrid_retrieve + rerank +
+    # generate pipeline unchanged — not yet a fully differentiated retrieval
+    # strategy per query type.
+    classification = classify_query(query, client)
+
+    if classification == "out-of-scope":
+        return {
+            "query": query,
+            "answer": (
+                "This question appears to be outside the scope of this corpus, which "
+                "covers retrieval-augmented generation and related retrieval topics."
+            ),
+            "classification": classification,
+            "chunks": [],
+        }
+
     chunks = hybrid_retrieve(query, k=n_results)
-    answer = generate_answer(query, chunks, get_anthropic_client())
-    return {"query": query, "answer": answer, "chunks": chunks}
+    answer = generate_answer(query, chunks, client)
+    return {"query": query, "answer": answer, "classification": classification, "chunks": chunks}
 
 
 if __name__ == "__main__":

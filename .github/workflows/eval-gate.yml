@@ -21,6 +21,18 @@ jobs:
         with:
           path: rag-pipeline
 
+      # data/chroma_db and data/chunks are gitignored (~420MB), so CI pulls the
+      # prebuilt index from a release. Re-upload the asset when the corpus changes.
+      - name: Download corpus index
+        working-directory: rag-pipeline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download corpus-v1 -R ${{ github.repository }} -p rag-corpus.tar.gz
+          tar -xzf rag-corpus.tar.gz
+          rm rag-corpus.tar.gz
+          test -f data/chunks/chunks.json && test -f data/chroma_db/chroma.sqlite3
+
       - name: Checkout eval-harness
         uses: actions/checkout@v4
         with:

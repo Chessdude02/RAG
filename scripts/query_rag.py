@@ -2,10 +2,13 @@
 import json
 import re
 import sys
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import anthropic
 import chromadb
+import numpy as np
 from dotenv import load_dotenv
 from rank_bm25 import BM25Okapi
 from sentence_transformers import CrossEncoder, SentenceTransformer
@@ -22,6 +25,8 @@ MAX_TOKENS = 1024
 TOP_K = 5
 CANDIDATE_POOL = 20  # per-retriever candidates fed into RRF, ahead of the final top-k
 RRF_K = 60
+MULTI_HOP_TOP_K = 8  # multi-hop answers draw on several papers, so pass more evidence
+MAX_SUB_QUESTIONS = 3
 
 QUERY_CATEGORIES = {"factual", "multi-hop", "out-of-scope"}
 
@@ -34,6 +39,14 @@ these three categories:
 Respond with only the category name and nothing else.
 
 Query: {query}"""
+
+QUERY_DECOMPOSITION_PROMPT = """Break the following research question into at most \
+{max_subs} simpler sub-questions, each answerable from a single passage of a single \
+paper. Together they should cover everything needed to answer the original question.
+
+Respond with one sub-question per line and nothing else.
+
+Question: {query}"""
 
 SYSTEM_PROMPT = """You are a research assistant answering questions using only the \
 provided excerpts from arXiv papers on retrieval-augmented generation.
@@ -53,6 +66,8 @@ _anthropic_client = None
 _bm25_index = None
 _bm25_chunks = None
 _cross_encoder = None
+# Runs retrieval for the original query while the classifier call is in flight.
+_retrieval_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="retrieval")
 
 
 def get_embedding_model() -> SentenceTransformer:
@@ -104,8 +119,44 @@ def _tokenize(text: str) -> list[str]:
     return re.findall(r"\w+", text.lower())
 
 
-def get_bm25_index() -> tuple[BM25Okapi, list[dict]]:
-    """Build (once) a BM25Okapi index over the full chunk corpus."""
+class InvertedBM25:
+    """BM25Okapi scoring over an inverted index.
+
+    rank_bm25's get_scores walks every document in Python once per query term
+    (~220ms/query on this corpus). This uses BM25Okapi's own idf/k1/b/avgdl but
+    only touches documents that contain each term, giving identical scores
+    (max abs diff ~1e-14 on eval/questions.jsonl) in ~3ms.
+    """
+
+    def __init__(self, tokenized_corpus: list[list[str]]):
+        okapi = BM25Okapi(tokenized_corpus)
+        self.k1, self.idf = okapi.k1, okapi.idf
+        doc_len = np.array(okapi.doc_len, dtype=np.float64)
+        self.n_docs = len(doc_len)
+        self.norm = okapi.k1 * (1 - okapi.b + okapi.b * doc_len / okapi.avgdl)
+
+        postings: dict[str, tuple[list[int], list[int]]] = defaultdict(lambda: ([], []))
+        for doc_idx, freqs in enumerate(okapi.doc_freqs):
+            for term, tf in freqs.items():
+                postings[term][0].append(doc_idx)
+                postings[term][1].append(tf)
+        self.postings = {
+            term: (np.array(docs, dtype=np.int32), np.array(tfs, dtype=np.float64))
+            for term, (docs, tfs) in postings.items()
+        }
+
+    def get_scores(self, query_tokens: list[str]) -> np.ndarray:
+        scores = np.zeros(self.n_docs)
+        for term in query_tokens:
+            if term not in self.postings:
+                continue
+            docs, tfs = self.postings[term]
+            scores[docs] += self.idf[term] * (tfs * (self.k1 + 1)) / (tfs + self.norm[docs])
+        return scores
+
+
+def get_bm25_index() -> tuple[InvertedBM25, list[dict]]:
+    """Build (once) a BM25 index over the full chunk corpus."""
     global _bm25_index, _bm25_chunks
     if _bm25_index is None:
         if not CHUNKS_PATH.exists():
@@ -113,7 +164,7 @@ def get_bm25_index() -> tuple[BM25Okapi, list[dict]]:
         with open(CHUNKS_PATH, "r", encoding="utf-8") as f:
             _bm25_chunks = json.load(f)
         tokenized_corpus = [_tokenize(chunk["text"]) for chunk in _bm25_chunks]
-        _bm25_index = BM25Okapi(tokenized_corpus)
+        _bm25_index = InvertedBM25(tokenized_corpus)
     return _bm25_index, _bm25_chunks
 
 
@@ -121,7 +172,7 @@ def bm25_retrieve(query: str, n_results: int = CANDIDATE_POOL) -> list[dict]:
     """Rank the full corpus with BM25 and return the top-n chunks."""
     bm25, chunks = get_bm25_index()
     scores = bm25.get_scores(_tokenize(query))
-    ranked_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:n_results]
+    ranked_indices = np.argsort(-scores, kind="stable")[:n_results]
 
     return [
         {
@@ -191,10 +242,9 @@ def extract_text(response: anthropic.types.Message) -> str:
 def classify_query(query: str, client: anthropic.Anthropic) -> str:
     """Classify a query as "factual", "multi-hop", or "out-of-scope".
 
-    First-pass heuristic classifier: for now the classification only gates whether
-    retrieval/generation runs at all (out-of-scope queries are short-circuited). It
-    does not yet select a differentiated retrieval strategy per category — "factual"
-    and "multi-hop" both fall through to the same hybrid_retrieve + rerank pipeline.
+    The category picks the retrieval strategy in answer_query: out-of-scope is
+    short-circuited, factual uses one hybrid_retrieve pass, and multi-hop is
+    decomposed into sub-questions that are each retrieved separately.
     """
     prompt = QUERY_CLASSIFICATION_PROMPT.format(query=query)
     response = client.messages.create(
@@ -208,6 +258,42 @@ def classify_query(query: str, client: anthropic.Anthropic) -> str:
         if category in text:
             return category
     return "factual"  # unparseable response: fail open into the normal pipeline
+
+
+def decompose_query(query: str, client: anthropic.Anthropic) -> list[str]:
+    """Split a multi-hop question into up to MAX_SUB_QUESTIONS single-passage sub-questions."""
+    prompt = QUERY_DECOMPOSITION_PROMPT.format(query=query, max_subs=MAX_SUB_QUESTIONS)
+    response = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=300,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    lines = [re.sub(r"^\s*(?:[-*]|\d+[.)])\s*", "", line).strip() for line in extract_text(response).splitlines()]
+    return [line for line in lines if line][:MAX_SUB_QUESTIONS]
+
+
+def multi_hop_retrieve(
+    query: str, client: anthropic.Anthropic, original_chunks: list[dict], k: int = MULTI_HOP_TOP_K
+) -> list[dict]:
+    """Retrieve for each sub-question, then interleave the per-question rankings
+    (original query first) round-robin, de-duplicating, up to k chunks.
+
+    Reranking every sub-question's pool against the ORIGINAL query would demote
+    chunks that answer only one part of it, which are exactly the ones a
+    multi-hop answer needs; interleaving keeps each part represented.
+    """
+    sub_questions = decompose_query(query, client)
+    rankings = [original_chunks] + list(
+        _retrieval_executor.map(lambda sub: hybrid_retrieve(sub, k=k), sub_questions)
+    )
+
+    merged, seen = [], set()
+    for rank in range(k):
+        for ranking in rankings:
+            if rank < len(ranking) and ranking[rank]["chunk_id"] not in seen:
+                seen.add(ranking[rank]["chunk_id"])
+                merged.append(ranking[rank])
+    return merged[:k]
 
 
 def build_context(chunks: list[dict]) -> str:
@@ -238,11 +324,10 @@ def answer_query(query: str, n_results: int = TOP_K) -> dict:
     """Full retrieve-then-generate pipeline. Returns the answer and retrieved chunks."""
     client = get_anthropic_client()
 
-    # First-pass heuristic classifier: today this only short-circuits out-of-scope
-    # queries before spending a retrieval+generation call on them. "factual" and
-    # "multi-hop" queries currently share the same hybrid_retrieve + rerank +
-    # generate pipeline unchanged — not yet a fully differentiated retrieval
-    # strategy per query type.
+    # Every in-scope strategy starts with a hybrid pass on the original query, so
+    # run it while the classifier call is in flight instead of after it. For
+    # out-of-scope queries the result is simply discarded.
+    original_future = _retrieval_executor.submit(hybrid_retrieve, query, max(n_results, MULTI_HOP_TOP_K))
     classification = classify_query(query, client)
 
     if classification == "out-of-scope":
@@ -256,7 +341,11 @@ def answer_query(query: str, n_results: int = TOP_K) -> dict:
             "chunks": [],
         }
 
-    chunks = hybrid_retrieve(query, k=n_results)
+    original_chunks = original_future.result()
+    if classification == "multi-hop":
+        chunks = multi_hop_retrieve(query, client, original_chunks)
+    else:
+        chunks = original_chunks[:n_results]
     answer = generate_answer(query, chunks, client)
     return {"query": query, "answer": answer, "classification": classification, "chunks": chunks}
 

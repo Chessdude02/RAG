@@ -20,9 +20,14 @@ embedding + storage (sentence-transformers -> Chroma)
         |
         v
    query in -----> query classifier ---> out-of-scope? --> short-circuit response
+                          |              (hybrid retrieval of the original query
+                          |               runs concurrently with this call)
+                          v
+              factual: top-5 of the original query
+              multi-hop: decompose into <=3 sub-questions, retrieve each,
+                         interleave rankings -> top-8
                           |
-                          v (factual / multi-hop)
-              hybrid retrieval:
+              each retrieval pass is hybrid:
                 dense (Chroma cosine) ---\
                                           +--> reciprocal rank fusion (RRF)
                 sparse (BM25, full corpus)-/
@@ -49,7 +54,9 @@ embedding + storage (sentence-transformers -> Chroma)
   against Chroma and sparse BM25 retrieval against the full chunk corpus are each run
   independently to a candidate pool, then fused with reciprocal rank fusion (RRF) so
   a chunk surfaced by either method — and especially by both — outranks one found by
-  only one signal.
+  only one signal. BM25 is scored over an inverted index (`InvertedBM25`) that
+  reproduces `rank_bm25`'s BM25Okapi scores exactly but only touches documents
+  containing each query term: ~3 ms per query instead of ~220 ms.
 - **Reranking**: the fused candidate pool is re-scored with a cross-encoder
   (`cross-encoder/ms-marco-MiniLM-L-6-v2`) and truncated to the final top-k, since RRF
   scores are a cheap fusion heuristic, not a relevance model.
@@ -59,9 +66,19 @@ embedding + storage (sentence-transformers -> Chroma)
   rather than presented as unattributed prose.
 - **Query classifier** (`scripts/query_rag.py:classify_query`): a lightweight Claude
   call classifies each incoming query as `factual`, `multi-hop`, or `out-of-scope`
-  before retrieval runs. Only the `out-of-scope` case currently changes behavior — it
-  short-circuits straight to a "not in this corpus" response instead of spending a
-  retrieval + generation call on a question the corpus can't answer.
+  and the category picks the retrieval strategy:
+  - `out-of-scope` short-circuits to a "not in this corpus" response with no
+    generation call.
+  - `factual` uses one hybrid retrieval pass and passes the top 5 chunks.
+  - `multi-hop` asks Claude to split the question into up to 3 single-passage
+    sub-questions (`decompose_query`), runs hybrid retrieval for each, and
+    interleaves the per-question rankings (original query first) into the top 8
+    chunks. Interleaving, rather than reranking everything against the original
+    question, keeps chunks that answer only one part of it.
+
+  The hybrid pass on the original query starts in a background thread while the
+  classifier call is in flight, so classification no longer adds its latency in
+  front of retrieval.
 
 ## 3. Key design decisions
 
@@ -118,17 +135,21 @@ found in the 20-question set:
   misclassified — i.e., text that belongs to a later section gets left attributed to
   the paper's front matter because its heading wasn't recognized. This is a known gap
   in `scripts/chunk_papers.py`, not a silent one.
-- **The query router is a first-pass classifier, not a routing strategy.** Today
-  `classify_query` only decides whether to short-circuit `out-of-scope` questions.
-  `factual` and `multi-hop` queries are both routed through the exact same
-  `hybrid_retrieve` + rerank pipeline — there is no differentiated retrieval strategy
-  per query type yet (e.g. wider candidate pools or multi-step retrieval for
-  multi-hop questions).
+  Section labels are metadata only (not used in retrieval or in the generation
+  context), and headings with paper-specific titles (e.g. "3 Proposed Framework")
+  are not recognized, so their text inherits the previous recognized section's
+  label — which is why Introduction and Related Work are over-represented. Fixing
+  the split would renumber chunk ids and invalidate every labeled eval set.
+- **Multi-hop routing is not yet separately evaluated.** The labeled sets are
+  mostly single-paper lookups with no questions tagged multi-hop, so they can't
+  show whether decomposition helps; that needs a labeled multi-hop question set. Multi-hop queries
+  also pay an extra Claude call plus one cross-encoder pass per sub-question.
 - **Hybrid retrieval costs roughly 1.5x the latency of naive retrieval** (10.63s vs.
-  6.97s average, end to end) in exchange for the precision@5 gain above. This is a
-  real, measured tradeoff, not a rounding error — the BM25 pass over the full corpus,
-  RRF fusion, and cross-encoder reranking all add wall-clock time that the naive
-  single dense lookup doesn't pay.
+  6.97s average, end to end, measured before the BM25 and concurrency changes
+  above) in exchange for the precision@5 gain above. The cross-encoder dominates
+  what remains: ~1.9 s of the ~2.1 s retrieval time on a laptop CPU. Shrinking its
+  candidate pool from 20 to 10 halves that but drops Recall@5 on the eval-harness
+  set from 1.00 to 0.84, so the pool stays at 20.
 
 ## 6. Setup and usage
 
@@ -188,6 +209,32 @@ python scripts/evaluate_retrieval.py path/to/other_test_questions.json
 
 Prints per-question precision@5, latency, and faithfulness for both pipelines, plus
 the summary table shown in section 4.
+
+### CI eval regression gate
+
+Every push to `main` runs `.github/workflows/eval-gate.yml`, which checks out the
+separate (private) `eval-harness` repo and runs its 20 labeled questions plus 24
+cached red-team prompts (hallucination bait, prompt injection, over-refusal) through
+`answer_query`. Each answer is scored with ROUGE-L, BLEU, embedding similarity, and
+a Claude judge. The gate fails if:
+
+- fewer than 80% of cases run without crashing, or
+- any tracked metric drops more than 0.05 below the last passing run.
+
+The baseline (run 37688638060, 2026-10-07): 44/44 cases ran, ROUGE-L 0.18, semantic
+similarity 0.73, judge composite 0.98, red-team pass rate 0.96.
+
+`data/chroma_db/` and `data/chunks/` are gitignored (~420 MB), so the workflow
+downloads them from the `corpus-v1` GitHub release. **If you rebuild the corpus,
+re-upload the asset**, or CI keeps testing against the old index:
+
+```bash
+tar -czf rag-corpus.tar.gz data/chroma_db data/chunks/chunks.json
+gh release upload corpus-v1 rag-corpus.tar.gz --clobber
+```
+
+Required repo secrets: `ANTHROPIC_API_KEY`, and `EVAL_HARNESS_TOKEN` (a
+fine-grained PAT with read access to the eval-harness repo).
 
 See `DEPLOYMENT.md` for deploying the API to an AWS EC2 instance.
 

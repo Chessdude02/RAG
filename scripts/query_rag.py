@@ -21,7 +21,7 @@ COLLECTION_NAME = "rag_papers"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 ANTHROPIC_MODEL = "claude-sonnet-5"
-MAX_TOKENS = 1024
+MAX_TOKENS = 4096  # includes adaptive thinking tokens; 1024 could leave no room for the answer
 TOP_K = 5
 CANDIDATE_POOL = 20  # per-retriever candidates fed into RRF, ahead of the final top-k
 RRF_K = 60
@@ -254,9 +254,15 @@ def classify_query(query: str, client: anthropic.Anthropic) -> str:
     response = client.messages.create(
         model=ANTHROPIC_MODEL,
         max_tokens=20,
+        # Thinking is on by default for this model and can spend the whole
+        # 20-token budget, leaving no text block (crashed 3/44 gate cases).
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
-    text = extract_text(response).strip().lower()
+    try:
+        text = extract_text(response).strip().lower()
+    except ValueError:
+        return "factual"
 
     for category in QUERY_CATEGORIES:
         if category in text:
@@ -265,14 +271,20 @@ def classify_query(query: str, client: anthropic.Anthropic) -> str:
 
 
 def decompose_query(query: str, client: anthropic.Anthropic) -> list[str]:
-    """Split a multi-hop question into up to MAX_SUB_QUESTIONS single-passage sub-questions."""
+    """Split a multi-hop question into up to MAX_SUB_QUESTIONS single-passage sub-questions.
+    Returns [] if no usable text comes back, so retrieval falls back to the original query."""
     prompt = QUERY_DECOMPOSITION_PROMPT.format(query=query, max_subs=MAX_SUB_QUESTIONS)
     response = client.messages.create(
         model=ANTHROPIC_MODEL,
         max_tokens=300,
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
-    lines = [re.sub(r"^\s*(?:[-*]|\d+[.)])\s*", "", line).strip() for line in extract_text(response).splitlines()]
+    try:
+        text = extract_text(response)
+    except ValueError:
+        return []
+    lines = [re.sub(r"^\s*(?:[-*]|\d+[.)])\s*", "", line).strip() for line in text.splitlines()]
     return [line for line in lines if line][:MAX_SUB_QUESTIONS]
 
 

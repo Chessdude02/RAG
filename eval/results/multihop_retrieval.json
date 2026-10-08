@@ -1,0 +1,86 @@
+{
+  "summary": {
+    "n": 10,
+    "k": 8,
+    "mean_single_pass_recall": 0.55,
+    "both_found_single_pass_recall": 3,
+    "mean_single_pass_paper_recall": 0.9,
+    "both_found_single_pass_paper_recall": 8,
+    "mean_decomposed_recall": 0.65,
+    "both_found_decomposed_recall": 3,
+    "mean_decomposed_paper_recall": 0.95,
+    "both_found_decomposed_paper_recall": 9
+  },
+  "per_question": [
+    {
+      "id": "mh01",
+      "single_pass_recall": 1.0,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 1.0,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh02",
+      "single_pass_recall": 0.5,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 0.5,
+      "decomposed_paper_recall": 0.5
+    },
+    {
+      "id": "mh03",
+      "single_pass_recall": 0.5,
+      "single_pass_paper_recall": 0.5,
+      "decomposed_recall": 0.5,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh04",
+      "single_pass_recall": 0.0,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 0.5,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh05",
+      "single_pass_recall": 1.0,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 1.0,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh06",
+      "single_pass_recall": 0.5,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 0.5,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh07",
+      "single_pass_recall": 0.5,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 0.5,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh08",
+      "single_pass_recall": 1.0,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 1.0,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh09",
+      "single_pass_recall": 0.5,
+      "single_pass_paper_recall": 1.0,
+      "decomposed_recall": 0.5,
+      "decomposed_paper_recall": 1.0
+    },
+    {
+      "id": "mh10",
+      "single_pass_recall": 0.0,
+      "single_pass_paper_recall": 0.5,
+      "decomposed_recall": 0.5,
+      "decomposed_paper_recall": 1.0
+    }
+  ]
+}

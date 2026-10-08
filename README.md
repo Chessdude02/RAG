@@ -140,10 +140,14 @@ found in the 20-question set:
   are not recognized, so their text inherits the previous recognized section's
   label — which is why Introduction and Related Work are over-represented. Fixing
   the split would renumber chunk ids and invalidate every labeled eval set.
-- **Multi-hop routing is not yet separately evaluated.** The labeled sets are
-  mostly single-paper lookups with no questions tagged multi-hop, so they can't
-  show whether decomposition helps; that needs a labeled multi-hop question set. Multi-hop queries
-  also pay an extra Claude call plus one cross-encoder pass per sub-question.
+- **Multi-hop routing is evaluated on a small set.** `eval/multihop_questions.jsonl`
+  has 10 questions that each need two different papers;
+  `eval/evaluate_multihop.py` compares one hybrid pass with decomposition, both at
+  k=8. Decomposition reached both papers for 9–10 of 10 questions across runs
+  (single pass: 8/10) and raised labeled-chunk recall from 0.55 to 0.65–0.70.
+  Ten questions is too few to separate prompt variants, and the sub-questions
+  vary between runs. Multi-hop queries also pay an extra Claude call plus one
+  cross-encoder pass per sub-question.
 - **Hybrid retrieval costs roughly 1.5x the latency of naive retrieval** (10.63s vs.
   6.97s average, end to end, measured before the BM25 and concurrency changes
   above) in exchange for the precision@5 gain above. The cross-encoder dominates

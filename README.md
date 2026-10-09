@@ -110,7 +110,7 @@ Headline numbers (October 2026). Each row names the script that reproduces it.
 | Retrieval Precision@5 | **0.64** (dense-only: 0.30) | `scripts/evaluate_retrieval.py`, 20 labeled questions |
 | Multi-hop: both source papers retrieved | **9–10 of 10** (single pass: 8/10) | `eval/evaluate_multihop.py` |
 | Faithfulness (every claim supported by context) | **90%** (18/20) | Claude judge, `scripts/evaluate_retrieval.py` |
-| Answer quality, Claude judge composite | **0.97–0.98** | CI eval gate, 20 labeled questions |
+| Answer quality, Claude judge composite | **0.96–0.98** | CI eval gate, 20 labeled questions |
 | Adversarial red-team pass rate | **96–100%** of 24 prompts | CI eval gate (injection, hallucination bait, over-refusal) |
 | End-to-end latency, factual queries | **p50 4.3 s**, p95 12.8 s | `eval/measure_end_to_end.py`, laptop CPU |
 | End-to-end latency, multi-hop queries | p50 18.5 s, p95 26.1 s | same |

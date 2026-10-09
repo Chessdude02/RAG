@@ -2,6 +2,23 @@
 
 [![Eval regression gate](https://github.com/Chessdude02/RAG/actions/workflows/eval-gate.yml/badge.svg)](https://github.com/Chessdude02/RAG/actions/workflows/eval-gate.yml)
 
+## Highlights
+
+- **Hybrid retrieval** (dense + BM25, reciprocal rank fusion, cross-encoder
+  reranking) over ~700 arXiv papers / 17,881 chunks: **Recall@5 0.52 → 0.88** and
+  **Precision@5 0.30 → 0.64** vs. dense-only retrieval, with **90% faithfulness**.
+- **Query routing with Claude**: out-of-scope questions are short-circuited and
+  multi-hop questions are decomposed into sub-questions, retrieving both source
+  papers for **9–10 of 10** two-paper questions (single pass: 8/10).
+- **CI eval regression gate** on every push: 12 offline unit tests, then 44 cases
+  (20 labeled + 24 adversarial: prompt injection, hallucination bait, over-refusal)
+  with **96–100% red-team pass rate**. It has caught three real failures (missing
+  index in CI, thinking tokens starving short calls, API credit exhaustion).
+- **Fast and cheap**: inverted-index BM25 cut scoring from ~220 ms to ~3 ms with
+  identical scores; factual queries run at **4.3 s p50** and **~$0.013 per query**.
+
+Every number comes from a script in this repo; see [Evaluation results](#4-evaluation-results).
+
 ## 1. Overview
 
 A retrieval-augmented generation system over a corpus of roughly 700 arXiv papers on

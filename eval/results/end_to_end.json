@@ -1,0 +1,267 @@
+{
+  "summary": {
+    "all": {
+      "n": 30,
+      "p50_s": 12.84,
+      "p95_s": 26.07,
+      "mean_s": 12.49,
+      "mean_cost_usd": 0.02076
+    },
+    "factual": {
+      "n": 15,
+      "p50_s": 4.32,
+      "p95_s": 12.84,
+      "mean_s": 6.3,
+      "mean_cost_usd": 0.01344
+    },
+    "multi-hop": {
+      "n": 15,
+      "p50_s": 18.45,
+      "p95_s": 26.07,
+      "mean_s": 18.69,
+      "mean_cost_usd": 0.02808
+    }
+  },
+  "per_query": [
+    {
+      "id": "q001",
+      "classification": "factual",
+      "latency_s": 5.28,
+      "input_tokens": 4638,
+      "output_tokens": 312,
+      "cost_usd": 0.0124
+    },
+    {
+      "id": "q002",
+      "classification": "multi-hop",
+      "latency_s": 14.07,
+      "input_tokens": 7338,
+      "output_tokens": 466,
+      "cost_usd": 0.01934
+    },
+    {
+      "id": "q003",
+      "classification": "multi-hop",
+      "latency_s": 17.47,
+      "input_tokens": 6085,
+      "output_tokens": 1249,
+      "cost_usd": 0.02466
+    },
+    {
+      "id": "q004",
+      "classification": "factual",
+      "latency_s": 4.32,
+      "input_tokens": 4273,
+      "output_tokens": 247,
+      "cost_usd": 0.01102
+    },
+    {
+      "id": "q005",
+      "classification": "multi-hop",
+      "latency_s": 17.2,
+      "input_tokens": 6621,
+      "output_tokens": 1407,
+      "cost_usd": 0.02731
+    },
+    {
+      "id": "q006",
+      "classification": "factual",
+      "latency_s": 14.36,
+      "input_tokens": 3960,
+      "output_tokens": 1608,
+      "cost_usd": 0.024
+    },
+    {
+      "id": "q007",
+      "classification": "factual",
+      "latency_s": 3.49,
+      "input_tokens": 4074,
+      "output_tokens": 164,
+      "cost_usd": 0.00979
+    },
+    {
+      "id": "q008",
+      "classification": "factual",
+      "latency_s": 2.86,
+      "input_tokens": 3787,
+      "output_tokens": 100,
+      "cost_usd": 0.00857
+    },
+    {
+      "id": "q009",
+      "classification": "factual",
+      "latency_s": 3.58,
+      "input_tokens": 4488,
+      "output_tokens": 136,
+      "cost_usd": 0.01034
+    },
+    {
+      "id": "q010",
+      "classification": "factual",
+      "latency_s": 9.09,
+      "input_tokens": 4565,
+      "output_tokens": 766,
+      "cost_usd": 0.01679
+    },
+    {
+      "id": "q011",
+      "classification": "multi-hop",
+      "latency_s": 7.93,
+      "input_tokens": 6821,
+      "output_tokens": 367,
+      "cost_usd": 0.01731
+    },
+    {
+      "id": "q012",
+      "classification": "factual",
+      "latency_s": 3.74,
+      "input_tokens": 3788,
+      "output_tokens": 174,
+      "cost_usd": 0.00932
+    },
+    {
+      "id": "q013",
+      "classification": "multi-hop",
+      "latency_s": 17.29,
+      "input_tokens": 6500,
+      "output_tokens": 1342,
+      "cost_usd": 0.02642
+    },
+    {
+      "id": "q014",
+      "classification": "factual",
+      "latency_s": 3.43,
+      "input_tokens": 4204,
+      "output_tokens": 143,
+      "cost_usd": 0.00984
+    },
+    {
+      "id": "q015",
+      "classification": "factual",
+      "latency_s": 7.08,
+      "input_tokens": 3580,
+      "output_tokens": 612,
+      "cost_usd": 0.01328
+    },
+    {
+      "id": "q016",
+      "classification": "factual",
+      "latency_s": 4.12,
+      "input_tokens": 4135,
+      "output_tokens": 228,
+      "cost_usd": 0.01055
+    },
+    {
+      "id": "q017",
+      "classification": "factual",
+      "latency_s": 9.58,
+      "input_tokens": 4125,
+      "output_tokens": 928,
+      "cost_usd": 0.01753
+    },
+    {
+      "id": "q018",
+      "classification": "factual",
+      "latency_s": 6.87,
+      "input_tokens": 4315,
+      "output_tokens": 549,
+      "cost_usd": 0.01412
+    },
+    {
+      "id": "q019",
+      "classification": "factual",
+      "latency_s": 12.84,
+      "input_tokens": 4589,
+      "output_tokens": 1383,
+      "cost_usd": 0.02301
+    },
+    {
+      "id": "q020",
+      "classification": "factual",
+      "latency_s": 3.79,
+      "input_tokens": 4550,
+      "output_tokens": 194,
+      "cost_usd": 0.01104
+    },
+    {
+      "id": "mh01",
+      "classification": "multi-hop",
+      "latency_s": 17.09,
+      "input_tokens": 6340,
+      "output_tokens": 1271,
+      "cost_usd": 0.02539
+    },
+    {
+      "id": "mh02",
+      "classification": "multi-hop",
+      "latency_s": 19.82,
+      "input_tokens": 6869,
+      "output_tokens": 1774,
+      "cost_usd": 0.03148
+    },
+    {
+      "id": "mh03",
+      "classification": "multi-hop",
+      "latency_s": 18.45,
+      "input_tokens": 5744,
+      "output_tokens": 1396,
+      "cost_usd": 0.02545
+    },
+    {
+      "id": "mh04",
+      "classification": "multi-hop",
+      "latency_s": 19.79,
+      "input_tokens": 6462,
+      "output_tokens": 1681,
+      "cost_usd": 0.02973
+    },
+    {
+      "id": "mh05",
+      "classification": "multi-hop",
+      "latency_s": 26.07,
+      "input_tokens": 7388,
+      "output_tokens": 2658,
+      "cost_usd": 0.04136
+    },
+    {
+      "id": "mh06",
+      "classification": "multi-hop",
+      "latency_s": 24.34,
+      "input_tokens": 6185,
+      "output_tokens": 2301,
+      "cost_usd": 0.03538
+    },
+    {
+      "id": "mh07",
+      "classification": "multi-hop",
+      "latency_s": 20.99,
+      "input_tokens": 6456,
+      "output_tokens": 1737,
+      "cost_usd": 0.03028
+    },
+    {
+      "id": "mh08",
+      "classification": "multi-hop",
+      "latency_s": 13.59,
+      "input_tokens": 6238,
+      "output_tokens": 948,
+      "cost_usd": 0.02196
+    },
+    {
+      "id": "mh09",
+      "classification": "multi-hop",
+      "latency_s": 19.2,
+      "input_tokens": 6341,
+      "output_tokens": 1406,
+      "cost_usd": 0.02674
+    },
+    {
+      "id": "mh10",
+      "classification": "multi-hop",
+      "latency_s": 27.04,
+      "input_tokens": 6317,
+      "output_tokens": 2573,
+      "cost_usd": 0.03836
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # RAG Pipeline
 
+[![Eval regression gate](https://github.com/Chessdude02/RAG/actions/workflows/eval-gate.yml/badge.svg)](https://github.com/Chessdude02/RAG/actions/workflows/eval-gate.yml)
+
 ## 1. Overview
 
 A retrieval-augmented generation system over a corpus of roughly 700 arXiv papers on
@@ -100,19 +102,25 @@ embedding + storage (sentence-transformers -> Chroma)
 
 ## 4. Evaluation results
 
-Measured with `scripts/evaluate_retrieval.py` against a 20-question labeled test set
-(`data/eval/test_questions.json`), comparing the naive dense-only baseline
-(`retrieve_relevant_chunks`) against the hybrid + rerank pipeline
-(`hybrid_retrieve`):
+Headline numbers (October 2026). Each row names the script that reproduces it.
 
-| Metric | Naive (dense-only) | Hybrid + rerank |
+| What | Result | Measured by |
 |---|---|---|
-| Precision@5 | 0.30 | 0.64 |
-| Avg. latency (retrieval + generation) | 6.97s | 10.63s |
+| Retrieval Recall@5 | **0.88** (dense-only: 0.52) | `eval/evaluate_baseline.py`, 60 labeled questions |
+| Retrieval Precision@5 | **0.64** (dense-only: 0.30) | `scripts/evaluate_retrieval.py`, 20 labeled questions |
+| Multi-hop: both source papers retrieved | **9–10 of 10** (single pass: 8/10) | `eval/evaluate_multihop.py` |
+| Faithfulness (every claim supported by context) | **90%** (18/20) | Claude judge, `scripts/evaluate_retrieval.py` |
+| Answer quality, Claude judge composite | **0.97–0.98** | CI eval gate, 20 labeled questions |
+| Adversarial red-team pass rate | **96–100%** of 24 prompts | CI eval gate (injection, hallucination bait, over-refusal) |
+| End-to-end latency, factual queries | **p50 4.3 s**, p95 12.8 s | `eval/measure_end_to_end.py`, laptop CPU |
+| End-to-end latency, multi-hop queries | p50 18.5 s, p95 26.1 s | same |
+| API cost per query | **$0.013** factual, $0.028 multi-hop | same, at list price |
+| BM25 scoring time | **~3 ms** (was ~220 ms) | inverted index, identical scores |
 
-| Metric | Value |
-|---|---|
-| Faithfulness rate | 90% (18/20) |
+On the 60-question set, BM25 alone also reaches Recall@5 0.88 (MRR@10 0.75 vs.
+0.74 for hybrid + rerank). Those questions were each written from a single chunk,
+which favors exact keyword overlap, so the set shows hybrid retrieval beats dense
+retrieval by a wide margin but does not separate it from BM25.
 
 Faithfulness is judged by a separate Claude call that checks whether every claim in a
 generated answer is actually supported by the retrieved context. Two failures were
@@ -148,10 +156,10 @@ found in the 20-question set:
   Ten questions is too few to separate prompt variants, and the sub-questions
   vary between runs. Multi-hop queries also pay an extra Claude call plus one
   cross-encoder pass per sub-question.
-- **Hybrid retrieval costs roughly 1.5x the latency of naive retrieval** (10.63s vs.
-  6.97s average, end to end, measured before the BM25 and concurrency changes
-  above) in exchange for the precision@5 gain above. The cross-encoder dominates
-  what remains: ~1.9 s of the ~2.1 s retrieval time on a laptop CPU. Shrinking its
+- **Latency is dominated by the cross-encoder and by answer length.** The
+  cross-encoder takes ~1.9 s of the ~2.1 s retrieval time on a laptop CPU, and
+  multi-hop queries run one pass per sub-question and produce answers 2–3x
+  longer, which is why they sit at ~18 s p50 against ~4 s for factual queries. Shrinking its
   candidate pool from 20 to 10 halves that but drops Recall@5 on the eval-harness
   set from 1.00 to 0.84, so the pool stays at 20.
 
@@ -213,6 +221,13 @@ python scripts/evaluate_retrieval.py path/to/other_test_questions.json
 
 Prints per-question precision@5, latency, and faithfulness for both pipelines, plus
 the summary table shown in section 4.
+
+### Run the unit tests
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest tests -q   # offline: no models, index, or API calls
+```
 
 ### CI eval regression gate
 

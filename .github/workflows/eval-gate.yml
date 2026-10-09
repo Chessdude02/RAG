@@ -47,7 +47,12 @@ jobs:
 
       - name: Install RAG pipeline dependencies
         working-directory: rag-pipeline
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      # Fast, offline (no models/index/API); fails before the paid eval runs.
+      - name: Unit tests
+        working-directory: rag-pipeline
+        run: python -m pytest tests -q
 
       - name: Install eval-harness dependencies
         working-directory: eval-harness

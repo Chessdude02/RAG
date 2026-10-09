@@ -11,3 +11,6 @@ data/chroma_db/
 .env
 data/eval/retry_questions.json
 data/eval/retry_questions2.json
+
+# eval judge-call cache (regenerable)
+eval/cache/

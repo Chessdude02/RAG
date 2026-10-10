@@ -1,20 +1,16 @@
 # Eval upgrade log
 
-Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-10 in Step 2: label set built, **waiting for the user's labels**.
+Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-10 **after Step 2**. Next is Step 3 (bias check).
 
 ## Resume here (next session)
-- **State:** Step 2, part 1 is committed (RAG `d94bb4d`). The user has been told the count (111 claims) and where to label.
-- **Waiting on the user:** they fill in `eval/labels/labels.csv` (or the `label` field in `to_label.jsonl`, not both) with `supported` / `not_supported` / `contradicted` for c001–c111.
-- **Before running anything:**
-  1. Check every claim has a valid label. If any are blank or invalid, or both files are filled in and disagree, stop and ask.
-  2. Count the unsupported labels. If there are fewer than 37 (under 1/3), tell the user before going on.
-- **Then do Step 2, part 2** (below): add `eval/agreement.py` in eval-harness with fake-data tests, then a RAG runner that judges the same 111 fixed claims with `claude-sonnet-5` and `claude-opus-5-5`.
-  - Group the claims by question and use that question's contexts.
-  - Opus can't use forced `tool_choice`, so use structured outputs.
-  - Set a cost cap.
-- **Report for each judge:** accuracy, precision and recall on not-supported (not_supported + contradicted), kappa (binary and 3-class) and every disagreement. Higher agreement becomes the default.
-- **Finish:** one commit, then stop.
-- **Total spend so far:** about $3.69.
+- Step 2 is done; see "Step 2, part 2" below.
+- **Next: Step 3, the bias check.**
+  - 50+ name/gender pairs on neutral tasks.
+  - Measure the gap in length, sentiment and judge tone rating; report the mean gap with a CI.
+  - State that it tests the generator, not the RAG pipeline.
+  - The scorer goes in eval-harness, with fake-judge tests.
+- **Default judge is now `claude-opus-5-5`.** It costs about 1.6x sonnet per judged call in this run, so re-estimate Step 5's cost before running it.
+- **Total spend so far:** about $4.57.
 
 ## Setup
 - **RAG repo:** `C:\Users\vedan\OneDrive\python\RAG\rag-pipeline`
@@ -138,3 +134,43 @@ How it was built:
 7. The judge with higher agreement becomes the default.
 
 Then Steps 3–6 as in the original brief: bias, injection planted in context, gate plus planted failures, README. Rough cost estimate: Steps 2–4 about $1–3 each, Step 5 about $20.
+
+## Step 2, part 2: judge agreement (done 2026-10-10)
+**Labels:**
+- The user's labels are in `eval/labels/labels_submitted.csv`: 111/111 valid, 63 supported, 42 not_supported, 6 contradicted. That is 48 unsupported, above the 37 needed.
+- An identical copy at `eval/labels_submitted.csv` is left uncommitted.
+- **By source:** real 54/54 supported. wrong_context: 22 not_supported, 6 contradicted, 2 supported. no_context: 20 not_supported, 7 supported.
+
+**Decision rule** (fixed before any judge ran): higher binary Cohen's kappa wins; a tie keeps sonnet.
+
+**How it ran:**
+- `eval/validate_judge.py` judges the fixed claims, one call per question, against that question's contexts, using the harness `judge_claims` (same prompt and path as Step 1).
+- Metrics come from the harness `eval/agreement.py`, with 7 tests.
+- Output: `eval/results/judge_agreement.json`. Cost $0.87737 (sonnet $0.34273, opus $0.53464).
+
+| n=111 | claude-sonnet-5 | claude-opus-5-5 |
+|---|---|---|
+| Accuracy, 3-class | 0.9279279279279279 (103/111) | 0.954954954954955 (106/111) |
+| Accuracy, binary | 0.963963963963964 (107/111) | 0.990990990990991 (110/111) |
+| Unsupported precision | 0.9583333333333334 (46/48) | 1.0 (47/47) |
+| Unsupported recall | 0.9583333333333334 (46/48) | 0.9791666666666666 (47/48) |
+| Kappa, binary | 0.9265873015873016 | 0.9816011934361014 |
+| Kappa, 3-class | 0.8614232209737827 | 0.913104744011273 |
+
+**Result:** `claude-opus-5-5` becomes the default (`scripts/evaluate_retrieval.py`). The Step 1 saved numbers stay sonnet-judged and comparable.
+
+**Disagreements:**
+- **Sonnet (8):**
+  - c009 (human not_supported, judge supported; binary);
+  - c021 and c048 (human supported, judge not_supported; binary);
+  - c058, c061, c068, c093 (human contradicted, judge not_supported);
+  - c098 (human not_supported, judge supported; binary).
+- **Opus (5):** c058, c061, c068, c093 (contradicted → not_supported), and c098 (not_supported → supported; binary).
+- All are on bad-answer claims. Both judges matched the human on all 54 real-answer claims.
+
+**Caveats for the README limits section:**
+1. **No real-answer claim is unsupported in the human labels**, so judge recall on the *pipeline's own* subtle errors is not measured. All 48 positives come from deliberately bad answers, which are easier to catch.
+2. **The judges differ by 3 binary disagreements out of 111** (4 vs 1). That is a small margin at this n.
+3. **Neither judge used "contradicted" where the human did** (4/6 went to not_supported). The 3-class boundary is weak, so binary is the main metric.
+4. **The worked example I gave before labeling covered c001–c006**, and the human's labels for those match it. Those 6 may be influenced by it.
+5. **One human labeler**, so there is no inter-annotator agreement.

@@ -1,0 +1,1886 @@
+{
+  "labels_file": "eval/labels/labels_submitted.csv",
+  "n_claims": 111,
+  "decision_rule": "higher binary Cohen's kappa; tie keeps claude-sonnet-5",
+  "selected_default_judge": "claude-opus-5-5",
+  "judges": {
+    "claude-sonnet-5": {
+      "agreement": {
+        "n_claims": 111,
+        "human_label_counts": {
+          "supported": 63,
+          "contradicted": 6,
+          "not_supported": 42
+        },
+        "judge_label_counts": {
+          "supported": 63,
+          "contradicted": 2,
+          "not_supported": 46
+        },
+        "accuracy_3class": 0.9279279279279279,
+        "accuracy_binary": 0.963963963963964,
+        "unsupported_tp": 46,
+        "unsupported_fp": 2,
+        "unsupported_fn": 2,
+        "unsupported_precision": 0.9583333333333334,
+        "unsupported_recall": 0.9583333333333334,
+        "unsupported_f1": 0.9583333333333334,
+        "kappa_binary": 0.9265873015873016,
+        "kappa_3class": 0.8614232209737827,
+        "confusion_3class": {
+          "supported": {
+            "supported": 61,
+            "not_supported": 2,
+            "contradicted": 0
+          },
+          "not_supported": {
+            "supported": 2,
+            "not_supported": 40,
+            "contradicted": 0
+          },
+          "contradicted": {
+            "supported": 0,
+            "not_supported": 4,
+            "contradicted": 2
+          }
+        },
+        "disagreements": [
+          {
+            "claim_id": "c009",
+            "human": "not_supported",
+            "judge": "supported",
+            "binary_disagrees": true,
+            "claim": "Dense retrieval is based on sentence embeddings or dual-encoder models.",
+            "question_id": "q002",
+            "judge_evidence": [
+              "C1"
+            ],
+            "judge_rationale": "C1 describes dense retrieval mapping queries and documents to continuous vectors and discusses bi-encoder architectures, supporting that dense retrieval is based on embeddings/dual-encoder models."
+          },
+          {
+            "claim_id": "c021",
+            "human": "supported",
+            "judge": "not_supported",
+            "binary_disagrees": true,
+            "claim": "The UIA framework stands for Unified Information Access.",
+            "question_id": "q004",
+            "judge_evidence": [],
+            "judge_rationale": "The excerpts never explicitly define what the acronym UIA stands for; they refer to 'universal information access' but do not state this is the expansion of UIA."
+          },
+          {
+            "claim_id": "c048",
+            "human": "supported",
+            "judge": "not_supported",
+            "binary_disagrees": true,
+            "claim": "Incorporating syntactic typed dependencies alongside simple unigram features improved classification performance over using unigrams alone.",
+            "question_id": "q008",
+            "judge_evidence": [],
+            "judge_rationale": "While C2 notes that adding typed dependencies improved accuracy by over 8.0%, it compares this to rich feature spaces or hand-crafted rules used by other approaches, not specifically to a unigram-only baseline, so the exact comparison claimed is not explicitly supported."
+          },
+          {
+            "claim_id": "c058",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "ReFeed notes that both datasets suffer from insufficient annotated examples.",
+            "question_id": "q011",
+            "judge_evidence": [],
+            "judge_rationale": "The excerpt states that CANARD and QReCC do not capture retrieval feedback or stylistic variation, not that they suffer from insufficient annotated examples."
+          },
+          {
+            "claim_id": "c061",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "The ReFeed paper cites the gold-standard dataset of 70 annotated papers as one of two supervised learning resources supporting semantic reformulation.",
+            "question_id": "q011",
+            "judge_evidence": [],
+            "judge_rationale": "No mention of a '70 annotated papers' gold-standard dataset appears in the excerpts."
+          },
+          {
+            "claim_id": "c068",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "The different sensitivities to training leakage are largely due to how retrieval redundancy is handled across the two collections.",
+            "question_id": "q013",
+            "judge_evidence": [],
+            "judge_rationale": "No excerpt discusses retrieval redundancy handling as the cause of differing sensitivities."
+          },
+          {
+            "claim_id": "c093",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "Dense retriever selection refers to the process by which GEAR chooses among conventional dense retrieval models to serve as the base retriever h_base.",
+            "question_id": "q017",
+            "judge_evidence": [],
+            "judge_rationale": "The excerpts define dense retriever selection in terms of LARMOR and ranking dense retrievers based on predicted effectiveness, not in terms of a method called GEAR or a 'base retriever h_base'. There is no mention of GEAR in the context."
+          },
+          {
+            "claim_id": "c098",
+            "human": "not_supported",
+            "judge": "supported",
+            "binary_disagrees": true,
+            "claim": "The training pipeline utilized mixed-precision training in some configurations.",
+            "question_id": "q018",
+            "judge_evidence": [
+              "C5"
+            ],
+            "judge_rationale": "C5 explicitly states 'We use mixed precision training to train the retriever and perform inference over the PLM using bfloat16 format,' confirming mixed-precision training was used in some configuration."
+          }
+        ]
+      },
+      "verdicts": {
+        "c001": {
+          "claim": "The BERT-based comparison model achieved a precision of 39.16% on the gold-standard dataset of 70 articles",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The excerpt states BERT's precision was 39.16% on the 70-paper gold-standard dataset."
+        },
+        "c002": {
+          "claim": "The BERT-based baseline achieved an F1-score of around 0.71 for technology extraction.",
+          "verdict": "contradicted",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The excerpt states BERT's F1-score was 53.73%, not approximately 71%."
+        },
+        "c003": {
+          "claim": "RATE achieved an F1-score of approximately 0.84 for technology extraction.",
+          "verdict": "contradicted",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The excerpt states RATE's F1-score was 91.27%, not approximately 84%."
+        },
+        "c004": {
+          "claim": "RATE incorporates stylistic alignment and retrieval feedback.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions RATE incorporating 'stylistic alignment' or 'retrieval feedback'; RATE is described as combining RAG with multi-definition LLM-based validation."
+        },
+        "c005": {
+          "claim": "The BERT-based comparison model achieved a recall of 85.50% on the gold-standard dataset of 70 articles",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The excerpt states BERT's recall was 85.50% on the 70-paper gold-standard dataset."
+        },
+        "c006": {
+          "claim": "RATE achieved an F1-score of 91.27% on the gold-standard dataset of 70 articles",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C5"
+          ],
+          "rationale": "Both excerpts confirm RATE achieved an F1-score of 91.27% on the gold-standard dataset."
+        },
+        "c007": {
+          "claim": "One retrieval method is a sparse retriever.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 states the sparse retriever utilized the BM25 algorithm, confirming one retrieval method is a sparse retriever."
+        },
+        "c008": {
+          "claim": "The combination of sparse and dense retrieval allows the system to retrieve supporting categories both through lexical overlap and semantic similarity.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "While C4 mentions both a sparse and dense retriever were explored, none of the excerpts explicitly state that combining them allows retrieval via both lexical overlap and semantic similarity; this is an inference not directly stated."
+        },
+        "c009": {
+          "claim": "Dense retrieval is based on sentence embeddings or dual-encoder models.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 describes dense retrieval mapping queries and documents to continuous vectors and discusses bi-encoder architectures, supporting that dense retrieval is based on embeddings/dual-encoder models."
+        },
+        "c010": {
+          "claim": "The dense retriever uses the Contriever model.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 explicitly states 'For the dense retriever, we employed the Contriever model.'"
+        },
+        "c011": {
+          "claim": "The sparse retriever uses the BM25 algorithm.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 explicitly states 'The sparse retriever utilized the BM25 algorithm.'"
+        },
+        "c012": {
+          "claim": "This combination improves coverage for zero-shot classification labels that may not share vocabulary with the input text.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt discusses the combination improving coverage for zero-shot classification labels lacking shared vocabulary; this is an unstated inference."
+        },
+        "c013": {
+          "claim": "B1 and B2 each have size B.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The text explicitly states |B1| = |B2| = B."
+        },
+        "c014": {
+          "claim": "In the BPIR converse proof, the set of non-user databases is partitioned into two blocks, B1 and B2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The text states the set of non-user databases (¯U) is divided into two sets B1 and B2."
+        },
+        "c015": {
+          "claim": "The remaining, less correlated databases fall into B2.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No mention of 'less correlated databases' or such a distinction exists in the excerpts."
+        },
+        "c016": {
+          "claim": "In the second scenario, the Byzantine databases flip their contents from W̃ to W.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The text states that if the true realization is W̃, the adversarial nodes (B1) flip their contents into W, matching the claim of flipping from W̃ to W."
+        },
+        "c017": {
+          "claim": "In the second scenario, the user collects the answer strings (A[i]_B1(W), A[i]_B2(W̃), A[i]_U(W̃)).",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The text explicitly lists this exact answer string tuple for the second scenario."
+        },
+        "c018": {
+          "claim": "Because this bias is structural rather than random, it guarantees a nonzero probability of decoding error whenever B1 and B2 are constructed this way.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not describe the bias as 'structural rather than random' or use this reasoning; this is an unsupported interpretive claim."
+        },
+        "c019": {
+          "claim": "The paper presents this as evidence that unifying the three functionalities under a single architecture yields measurable retrieval quality gains.",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C4"
+          ],
+          "rationale": "The excerpts show that joint training (unifying functionalities) leads to measurable NDCG@10 improvements, e.g., 34% and 45% relative improvements in query by example and complementary item recommendation, supporting the claim that unification yields measurable gains."
+        },
+        "c020": {
+          "claim": "These complementary signals would otherwise remain isolated in single-task setups.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts discuss benefits of joint training and personalization but do not explicitly state that complementary signals would otherwise remain isolated in single-task setups."
+        },
+        "c021": {
+          "claim": "The UIA framework stands for Unified Information Access.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts never explicitly define what the acronym UIA stands for; they refer to 'universal information access' but do not state this is the expansion of UIA."
+        },
+        "c022": {
+          "claim": "The Lowe's dataset contains fewer data points for query by example and complementary item recommendation tasks.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "The text explicitly states 'Lowe's dataset contains fewer data points for these two tasks' referring to query by example and complementary item recommendation."
+        },
+        "c023": {
+          "claim": "An ablation study was conducted on the Lowe's dataset.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "The text states 'we conduct a thorough ablation study on the Lowe's dataset'."
+        },
+        "c024": {
+          "claim": "Jointly modeling all information access functionalities in the UIA framework can yield up to 45% NDCG@10 improvement compared to individual (task-specific) modeling using the same dense retrieval architecture.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The text explicitly states 'up to 45% NDCG@10 improvements can be obtained by jointly modeling all information access functionalities compared to their individual modeling using the same dense retrieval architecture.'"
+        },
+        "c025": {
+          "claim": "AdaPCR avoids document filtering during inference.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the method avoids document filtering during inference and instead optimizes the retriever distribution."
+        },
+        "c026": {
+          "claim": "Some methods try to make the language model robust against noisy inputs through synthesized noisy training contexts.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 explicitly mentions that several works synthesize noisy contexts for LM training to make the LM robust against noisy inputs."
+        },
+        "c027": {
+          "claim": "The MOEBQA routing strategy is end-to-end learned.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions MOEBQA or its routing strategy."
+        },
+        "c028": {
+          "claim": "In MOEBQA, each example is assigned to only a few experts based on its underlying question type.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt discusses MOEBQA or expert assignment based on question type."
+        },
+        "c029": {
+          "claim": "Modeling dependencies between passages helps address redundancy and diversity issues that arise from noisy, large-scale corpora.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 states that by modeling dependencies between passages, AdaPCR overcomes limitations including handling redundancy and promoting diversity."
+        },
+        "c030": {
+          "claim": "The adaptive combination technique has only a tolerable computational overhead.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt discusses computational overhead of the adaptive combination technique."
+        },
+        "c031": {
+          "claim": "Knowledge distillation from cross-encoder rerankers improves the bi-encoder's ranking quality.",
+          "verdict": "supported",
+          "evidence": [
+            "C4",
+            "C3"
+          ],
+          "rationale": "C4 states it is useful to distill a more capable teacher model (e.g., cross-encoder) to enhance bi-encoder capacity, and C3 describes cross-encoder relevance features being transferred to retrievers to improve performance, supporting that cross-encoder distillation improves bi-encoder ranking quality."
+        },
+        "c032": {
+          "claim": "Karpukhin et al. first showed that using hard negatives sampled from BM25 top retrieved passages is sufficient for learning an effective BERT-based dense retriever.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 explicitly states Karpukhin et al. first demonstrated that leveraging hard negatives sampled from BM25 top retrieved passages is sufficient for learning a fairly effective BERT-based DR."
+        },
+        "c033": {
+          "claim": "Late interaction architectures, such as ColBERT, preserve token-level embeddings.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 states ColBERT indexes a vector for every word, implying token-level embeddings are preserved, consistent with late interaction architectures."
+        },
+        "c034": {
+          "claim": "A gradient caching technique proposed by Gao et al. later enabled the RocketQA pipeline to run on a single GPU.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states Gao et al. introduced a gradient caching technique that allows the RocketQA training pipeline to be run within a single GPU."
+        },
+        "c035": {
+          "claim": "Auto-encoder and contrastive learning-based pretraining methods are increasingly adopted to enhance semantic representations.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 explicitly states that auto-encoder and contrastive learning based pretraining methods have been widely adopted to enhance the semantic representations of texts."
+        },
+        "c036": {
+          "claim": "Better negative sampling strategies have contributed to stronger dense retrievers.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C2",
+            "C4"
+          ],
+          "rationale": "Multiple excerpts describe how improved negative sampling strategies (hard negatives, ANCE, ADORE, dynamic sampling) have contributed to more effective dense retrievers."
+        },
+        "c037": {
+          "claim": "The 3-hop reasoning chain starts from the question's main entity, Stephen Curry.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the 3-hop reasoning chain starts from the question's main entity, Stephen Curry."
+        },
+        "c038": {
+          "claim": "The paper makes a broader point that complex, multi-step reasoning chains require sequential retrieval rather than a single-pass lookup",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states that a base retriever cannot, by design, retrieve all necessary information in a single step for multi-hop reasoning, implying sequential retrieval is required for complex reasoning chains."
+        },
+        "c039": {
+          "claim": "all-mpnet-base-v2 is an example of a suitable dense retriever for SciDocs and FiQA",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The context excerpts make no mention of all-mpnet-base-v2, SciDocs, or FiQA."
+        },
+        "c040": {
+          "claim": "The GeAR paper notes that a base retriever cannot, by design, retrieve all necessary information in a single step for multi-hop questions.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 explicitly states a base retriever cannot, by design, retrieve all necessary information in a single step."
+        },
+        "c041": {
+          "claim": "The multi-hop retrieval scenario is similar to the dense retriever selection problem described by Khramtsova et al.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "There is no mention of Khramtsova et al. or any dense retriever selection problem in the provided excerpts."
+        },
+        "c042": {
+          "claim": "The GeAR paper illustrates the limitation of a base retriever with the example question: \"In what year did Stephen Curry's father join the team from which he started his college basketball career?\"",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 contains the exact example question used to illustrate the limitation of a base retriever."
+        },
+        "c043": {
+          "claim": "Syntactic typed dependencies help capture relationships between question words that indicate the expected answer type.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts mention typed dependencies as semantic features used for classification and their use improving accuracy, but do not explicitly state that they capture relationships between question words indicating expected answer type."
+        },
+        "c044": {
+          "claim": "The question classification method achieved an accuracy of 87.6% on the UIUC dataset.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 states 'With unigram feature and typed dependency feature, one can obtain accuracy of 87.6%... for the UIUC... dataset'."
+        },
+        "c045": {
+          "claim": "The question classification method used maximum entropy classification.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 explicitly states the accuracy was obtained 'using maximum entropy classification'."
+        },
+        "c046": {
+          "claim": "The FPT dataset is smaller in size than the UIUC dataset.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt provides information comparing the sizes of the FPT and UIUC datasets."
+        },
+        "c047": {
+          "claim": "The question classification method used unigram features combined with typed dependency features.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 states 'With unigram feature and typed dependency feature, one can obtain accuracy of 87.6% and 80.5%...' indicating both features were used together."
+        },
+        "c048": {
+          "claim": "Incorporating syntactic typed dependencies alongside simple unigram features improved classification performance over using unigrams alone.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "While C2 notes that adding typed dependencies improved accuracy by over 8.0%, it compares this to rich feature spaces or hand-crafted rules used by other approaches, not specifically to a unigram-only baseline, so the exact comparison claimed is not explicitly supported."
+        },
+        "c049": {
+          "claim": "The dual-encoder architecture follows Karpukhin et al. (2020).",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not mention a dual-encoder architecture or Karpukhin et al. (2020) at all."
+        },
+        "c050": {
+          "claim": "The ChatDoctor system builds on the pre-training paradigm pioneered by Lee et al. (2019) with the Inverse Cloze Task.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not mention ChatDoctor, Lee et al. (2019), or the Inverse Cloze Task."
+        },
+        "c051": {
+          "claim": "The Condenser-style pre-training architecture was proposed by Gao and Callan (2021b).",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not mention Condenser-style pre-training or Gao and Callan (2021b)."
+        },
+        "c052": {
+          "claim": "The main guiding principles traditionally used in building IR models and tools have been efficiency and effectiveness.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states 'efficiency and effectiveness have been the main guiding principles in building IR models and tools.'"
+        },
+        "c053": {
+          "claim": "Addressing vocabulary mismatch and difficulty representing user information needs typically requires techniques such as query expansion.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions vocabulary mismatch, query expansion, or user information need modeling techniques."
+        },
+        "c054": {
+          "claim": "The reason assisting information seekers in locating a specific facet of information has rarely been addressed is due to the inherent difficulty of such a task.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 explicitly states the task 'has rarely been addressed in the IR community due to the inherent difficulty of such a task.'"
+        },
+        "c055": {
+          "claim": "The second issue concerns accurately capturing and modeling a user's true information need.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt discusses a 'second issue' about capturing a user's true information need."
+        },
+        "c056": {
+          "claim": "The paper is titled \"Annotation of Scientific Summaries for Information Retrieval\".",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The excerpt's source title is given as 'Annotation of Scientific Summaries for Information Retrieval'."
+        },
+        "c057": {
+          "claim": "Sophisticated ranking algorithms cannot compensate for a fundamental mismatch between query representation and document representation.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt discusses ranking algorithms compensating for mismatches between query and document representation."
+        },
+        "c058": {
+          "claim": "ReFeed notes that both datasets suffer from insufficient annotated examples.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpt states that CANARD and QReCC do not capture retrieval feedback or stylistic variation, not that they suffer from insufficient annotated examples."
+        },
+        "c059": {
+          "claim": "CANARD and QReCC do not account for the stylistic alignment between queries and target documents.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 explicitly states these datasets do not capture retrieval feedback or stylistic variation, aligning with the claim about lack of stylistic alignment."
+        },
+        "c060": {
+          "claim": "The ReFeed paper draws on the RATE pipeline's experimental setup to benchmark its query-rewriting approach.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No mention of a 'RATE pipeline' appears anywhere in the excerpts."
+        },
+        "c061": {
+          "claim": "The ReFeed paper cites the gold-standard dataset of 70 annotated papers as one of two supervised learning resources supporting semantic reformulation.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No mention of a '70 annotated papers' gold-standard dataset appears in the excerpts."
+        },
+        "c062": {
+          "claim": "CANARD and QReCC provide pairs of conversational and standalone queries.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states that CANARD and QReCC provide pairs of conversational and standalone queries."
+        },
+        "c063": {
+          "claim": "QReCC is by Anantha et al., published in 2021.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 cites QReCC as (Anantha et al. 2021)."
+        },
+        "c064": {
+          "claim": "C2F-RAG topped the leaderboard with the best nDCG@10 among all submissions",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "The excerpts state C2F-RAG achieves the highest retrieval scores and the leaderboard table shows C2F-RAG at rank 1 with the highest nDCG@10 (0.848)."
+        },
+        "c065": {
+          "claim": "Text-based reasoning involves converting videos into summaries and captions instead of processing raw video",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C2"
+          ],
+          "rationale": "The excerpts explicitly describe text-based reasoning as converting videos into summaries and captions rather than operating on video directly."
+        },
+        "c066": {
+          "claim": "C2F-RAG topped the leaderboard with the best related metrics among all submissions",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "Table 1 shows C2F-RAG ranked 1st with the highest values across most reported metrics (e.g., 0.848, 0.851, 0.853, 0.773, 0.832, 0.837), consistent with it topping the leaderboard on related metrics."
+        },
+        "c067": {
+          "claim": "The impact of MSM leakage on Robust04 is described as rather negligible or minimal.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states 'While the changes on Robust04 are rather negligible, the impact is larger for the Common Core tracks...'"
+        },
+        "c068": {
+          "claim": "The different sensitivities to training leakage are largely due to how retrieval redundancy is handled across the two collections.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt discusses retrieval redundancy handling as the cause of differing sensitivities."
+        },
+        "c069": {
+          "claim": "In Robust04-style setups, the full training corpus is still used despite the penalty factor.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions a 'penalty factor' or use of the full training corpus in Robust04-style setups."
+        },
+        "c070": {
+          "claim": "An example of a model order swap is monoBERT with MSM leakage slightly overtaking PACRR.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 explicitly states 'monoBERT with MSM leakage would slightly overtake PACRR.'"
+        },
+        "c071": {
+          "claim": "For Common Core 2017, more models improve their effectiveness when trained with MSM leakage because the time gap between the New York Times Annotated Corpus and MS MARCO is smaller than for Robust04.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 states 'more models improve their effectiveness when trained with MSM leakage as the time gap between the New York Times Annotated Corpus and MS MARCO is smaller than for Robust04.'"
+        },
+        "c072": {
+          "claim": "In Robust04-style setups, leakage acts like reducing the effective number of clean training signals by 2B.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions a '2B' reduction factor or such a quantitative claim about clean training signals."
+        },
+        "c073": {
+          "claim": "ConAE shrinks the index storage from 26.0G to 4.3G on MS MARCO",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states ConAE saves index storage from 26.0G to 4.3G on MS MARCO."
+        },
+        "c074": {
+          "claim": "Latency reductions in dense retrieval compression approaches typically range from 2x to 5x",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt gives a general statement about typical latency reduction ranges (2x-5x) for dense retrieval compression approaches."
+        },
+        "c075": {
+          "claim": "ConAE reduces retrieval latency from 17.152 ms to 3.942 ms per query on MS MARCO",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 explicitly states latency reduces from 17.152 ms to 3.942 ms per query."
+        },
+        "c076": {
+          "claim": "ANCE embeddings are high-dimensional vectors of 768 dimensions",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "Table 2 caption in C3 references 768-dimensional embeddings for ANCE (Teacher), confirming 768 as the original dimension."
+        },
+        "c077": {
+          "claim": "Latency reductions in such compression approaches occur due to reduced vector comparison costs and improved cache efficiency",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not explain the cause of latency reductions in terms of vector comparison costs or cache efficiency."
+        },
+        "c078": {
+          "claim": "ConAE achieves comparable retrieval performance to the ANCE (Teacher) model on MS MARCO when compressing embeddings to 128 dimensions",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states ConAE can achieve comparable performance with ANCE (Teacher) using 128-dimensional embeddings on MS MARCO."
+        },
+        "c079": {
+          "claim": "MOEBQA builds on the AdaPCR framework's insight that passages scored independently overlook important inter-passage dependencies",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts make no mention of an 'AdaPCR framework' or any insight about passages scored independently overlooking inter-passage dependencies. This appears to be a fabricated claim not grounded in the provided context."
+        },
+        "c080": {
+          "claim": "MOEBQA aligns retriever scores with answer likelihood as in Equation 1 of the AdaPCR formulation",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "There is no mention of 'AdaPCR' or an 'Equation 1' aligning retriever scores with answer likelihood anywhere in the excerpts."
+        },
+        "c081": {
+          "claim": "MOEBQA's expert-partitioned Transformer architecture improves robustness on complex, multi-hop biomedical questions",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts discuss MOEBQA's benefits for decoupling parameter competition between question types and achieving state-of-the-art performance, but do not mention 'multi-hop' questions or robustness specifically for such questions."
+        },
+        "c082": {
+          "claim": "The bottom blocks in MOEBQA are designed to capture general features common across question types.",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C4"
+          ],
+          "rationale": "The excerpts explicitly state that the bottom blocks are shared by all examples and aim to capture the general features among them."
+        },
+        "c083": {
+          "claim": "MOEBQA splits a pretrained Transformer model into bottom and top blocks.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "Both excerpts explicitly state that MOEBQA splits a pretrained Transformer model into bottom and top blocks."
+        },
+        "c084": {
+          "claim": "In Biomedical Question Answering, different types of biomedical questions must compete for shared model parameters when answered by a single homogeneous model.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "The excerpts state that existing methods answer all questions with a homogeneous model, leading different types of questions to compete for the shared parameters."
+        },
+        "c085": {
+          "claim": "Wu et al. proposed addressing the cold start issue by incorporating auxiliary information beyond interaction history.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpt states Wu et al. leveraged LLMs with pre-trained knowledge from web datasets to address cold start, not 'auxiliary information beyond interaction history'. This specific characterization is not stated."
+        },
+        "c086": {
+          "claim": "The fact that integration of LLMs into course recommendation systems remains largely unexplored presented an opportunity for the RAMO study",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C4"
+          ],
+          "rationale": "C3 states integration of LLMs into course recommendation systems remains largely unexplored, presenting an opportunity for future research, and C4 similarly notes a gap in research motivating RAMO."
+        },
+        "c087": {
+          "claim": "The cold start problem arises because there is no historical data available for new users",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 explicitly states the cold start problem arises because there is no historical data available for new users."
+        },
+        "c088": {
+          "claim": "The cold start problem is especially problematic in educational settings where new courses are frequently introduced.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions new courses being frequently introduced as a cause of the cold start problem."
+        },
+        "c089": {
+          "claim": "Wu et al.'s approach leveraged content-based features and side information such as course descriptions, prerequisites, and learner profiles to bridge the data sparsity gap.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpt describes Wu et al.'s approach as using LLMs with pre-trained web knowledge, not content-based features like course descriptions, prerequisites, or learner profiles."
+        },
+        "c090": {
+          "claim": "Traditional recommender systems often rely on collaborative filtering methods based on preferences of similar users or historical course completions",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 describes prior studies using collaborative filtering methods, including recommending courses based on preferences of similar users."
+        },
+        "c091": {
+          "claim": "Queries and relevance judgments for the target corpus are sometimes prohibitively costly or restricted to collect.",
+          "verdict": "supported",
+          "evidence": [
+            "C5",
+            "C1"
+          ],
+          "rationale": "The excerpts state that queries and relevance judgements for the target corpus are often not available or prohibitive to collect due to costs or data access restrictions, matching this claim."
+        },
+        "c092": {
+          "claim": "GEAR does not require a specially engineered retriever architecture.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The context excerpts do not mention GEAR at all, so there is no basis to support or contradict this claim."
+        },
+        "c093": {
+          "claim": "Dense retriever selection refers to the process by which GEAR chooses among conventional dense retrieval models to serve as the base retriever h_base.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts define dense retriever selection in terms of LARMOR and ranking dense retrievers based on predicted effectiveness, not in terms of a method called GEAR or a 'base retriever h_base'. There is no mention of GEAR in the context."
+        },
+        "c094": {
+          "claim": "Simply choosing the dense retriever that performs best overall on a comprehensive leaderboard like MTEB is not a reliable strategy.",
+          "verdict": "supported",
+          "evidence": [
+            "C5"
+          ],
+          "rationale": "The excerpt explicitly states that selecting the overall top-performing DR from MTEB is not necessarily suitable, since effectiveness is unpredictable across domains."
+        },
+        "c095": {
+          "claim": "These challenges motivate the development of methods like LARMOR.",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C1",
+            "C5"
+          ],
+          "rationale": "The excerpts describe the challenges of dense retriever selection (domain shift, lack of labels) and present LARMOR as a method developed to address exactly these challenges."
+        },
+        "c096": {
+          "claim": "Dense retrievers, like sparse counterparts, inherently struggle with multi-hop retrieval scenarios.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The context excerpts do not discuss multi-hop retrieval or compare dense and sparse retrievers' struggles with it."
+        },
+        "c097": {
+          "claim": "Mixed-precision training was used to optimize memory usage and computational efficiency.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpt mentions mixed precision training was used, but does not state the purpose was to optimize memory usage and computational efficiency."
+        },
+        "c098": {
+          "claim": "The training pipeline utilized mixed-precision training in some configurations.",
+          "verdict": "supported",
+          "evidence": [
+            "C5"
+          ],
+          "rationale": "C5 explicitly states 'We use mixed precision training to train the retriever and perform inference over the PLM using bfloat16 format,' confirming mixed-precision training was used in some configuration."
+        },
+        "c099": {
+          "claim": "The NEWSKVQA experiments were conducted using NVIDIA GPUs.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "None of the excerpts mention NEWSKVQA experiments or their hardware setup."
+        },
+        "c100": {
+          "claim": "The Inverse Cloze Task is implemented through XiaoIce's topic shift detector",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The context excerpts discuss ICT, BFS, and WLP as pre-training tasks for dense retrieval but make no mention of XiaoIce or a topic shift detector."
+        },
+        "c101": {
+          "claim": "Body First Selection (BFS) uses sentences from the first section of a Wikipedia article as anchors to the rest of the text",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 states 'BFS utilizes the sentences from the first section of a Wikipedia article as anchors to the rest of sections of texts.'"
+        },
+        "c102": {
+          "claim": "XiaoIce's topic shift detector monitors dialogue signals like bland user inputs such as 'OK' or 'I see' to determine when retrieval should be re-triggered",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions XiaoIce or any topic shift detector monitoring dialogue signals."
+        },
+        "c103": {
+          "claim": "Inverse Cloze Task, Body First Selection, and Wiki Link Prediction collectively feed into a five-factor topic selection model used by XiaoIce",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions a five-factor topic selection model or XiaoIce using ICT, BFS, and WLP together."
+        },
+        "c104": {
+          "claim": "In Body First Selection (BFS), a randomly sampled passage from later sections is considered the matched text",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 states BFS considers 'a randomly sampled passage in the following sections as a matched text,' matching the claim."
+        },
+        "c105": {
+          "claim": "Body First Selection (BFS) randomly samples one sentence from the first section of a Wikipedia page to act as a pseudo query",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "C1 states 'one sentence from the first section of a Wikipedia page is randomly sampled' for BFS, and C4 confirms the sampled sentence from the first section acts as the query."
+        },
+        "c106": {
+          "claim": "On the DL19 dataset, synonym substitution causes a decrease of 0.143 NDCG in Stage 2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "The text explicitly states Stage 2 drops by 0.143 NDCG for synonym substitution on DL19."
+        },
+        "c107": {
+          "claim": "The sensitivity to misspellings highlights a persistent weakness in reranker robustness to noisy, real-world query formulations compared to clean, well-formed text.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts discuss generative retrieval (PAG) and dense baselines' sensitivity to misspellings, not 'reranker' robustness; no mention of rerankers is made, so this generalization is not supported by the given context."
+        },
+        "c108": {
+          "claim": "On the DL19 dataset, reordering causes a decrease of 0.014 NDCG in Stage 2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "The text explicitly states reordering causes a 0.014 NDCG drop on DL19."
+        },
+        "c109": {
+          "claim": "Reordering tends to preserve more of the original semantic and lexical content, including key entities and terms.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "While reordering is described as near-invariant, the excerpts do not explicitly state that it preserves semantic/lexical content including key entities and terms."
+        },
+        "c110": {
+          "claim": "On the DL19 dataset, misspelling causes a decrease of 0.217 NDCG in Stage 2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "The text explicitly states Stage 2 drops by 0.217 NDCG for misspelling on DL19."
+        },
+        "c111": {
+          "claim": "Paraphrasing tends to preserve more of the original semantic and lexical content, including key entities and terms.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts note paraphrasing causes a smaller drop (0.073 NDCG) than misspelling/synonym, but do not explicitly state that paraphrasing preserves semantic/lexical content or key entities/terms."
+        }
+      }
+    },
+    "claude-opus-5-5": {
+      "agreement": {
+        "n_claims": 111,
+        "human_label_counts": {
+          "supported": 63,
+          "contradicted": 6,
+          "not_supported": 42
+        },
+        "judge_label_counts": {
+          "supported": 64,
+          "contradicted": 2,
+          "not_supported": 45
+        },
+        "accuracy_3class": 0.954954954954955,
+        "accuracy_binary": 0.990990990990991,
+        "unsupported_tp": 47,
+        "unsupported_fp": 0,
+        "unsupported_fn": 1,
+        "unsupported_precision": 1.0,
+        "unsupported_recall": 0.9791666666666666,
+        "unsupported_f1": 0.9894736842105264,
+        "kappa_binary": 0.9816011934361014,
+        "kappa_3class": 0.913104744011273,
+        "confusion_3class": {
+          "supported": {
+            "supported": 63,
+            "not_supported": 0,
+            "contradicted": 0
+          },
+          "not_supported": {
+            "supported": 1,
+            "not_supported": 41,
+            "contradicted": 0
+          },
+          "contradicted": {
+            "supported": 0,
+            "not_supported": 4,
+            "contradicted": 2
+          }
+        },
+        "disagreements": [
+          {
+            "claim_id": "c058",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "ReFeed notes that both datasets suffer from insufficient annotated examples.",
+            "question_id": "q011",
+            "judge_evidence": [],
+            "judge_rationale": "ReFeed says the datasets lack retrieval feedback and stylistic variation, not that they have insufficient annotated examples; they are described as large-scale."
+          },
+          {
+            "claim_id": "c061",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "The ReFeed paper cites the gold-standard dataset of 70 annotated papers as one of two supervised learning resources supporting semantic reformulation.",
+            "question_id": "q011",
+            "judge_evidence": [],
+            "judge_rationale": "The two cited supervised learning resources are CANARD and QReCC; no dataset of 70 annotated papers is mentioned."
+          },
+          {
+            "claim_id": "c068",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "The different sensitivities to training leakage are largely due to how retrieval redundancy is handled across the two collections.",
+            "question_id": "q013",
+            "judge_evidence": [],
+            "judge_rationale": "The excerpts attribute the difference to the time gap between document publication dates, not to how retrieval redundancy is handled."
+          },
+          {
+            "claim_id": "c093",
+            "human": "contradicted",
+            "judge": "not_supported",
+            "binary_disagrees": false,
+            "claim": "Dense retriever selection refers to the process by which GEAR chooses among conventional dense retrieval models to serve as the base retriever h_base.",
+            "question_id": "q017",
+            "judge_evidence": [],
+            "judge_rationale": "The excerpts define dense retriever selection as identifying the most suitable DR for a target corpus. They do not mention GEAR or h_base."
+          },
+          {
+            "claim_id": "c098",
+            "human": "not_supported",
+            "judge": "supported",
+            "binary_disagrees": true,
+            "claim": "The training pipeline utilized mixed-precision training in some configurations.",
+            "question_id": "q018",
+            "judge_evidence": [
+              "C5"
+            ],
+            "judge_rationale": "C5 states that mixed precision training was used to train the retriever."
+          }
+        ]
+      },
+      "verdicts": {
+        "c001": {
+          "claim": "The BERT-based comparison model achieved a precision of 39.16% on the gold-standard dataset of 70 articles",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 reports BERT precision of 39.16% when compared against the gold-standard list for the 70 papers."
+        },
+        "c002": {
+          "claim": "The BERT-based baseline achieved an F1-score of around 0.71 for technology extraction.",
+          "verdict": "contradicted",
+          "evidence": [
+            "C1",
+            "C5"
+          ],
+          "rationale": "C1 and C5 give BERT's F1-score as 53.73%, not about 0.71."
+        },
+        "c003": {
+          "claim": "RATE achieved an F1-score of approximately 0.84 for technology extraction.",
+          "verdict": "contradicted",
+          "evidence": [
+            "C1",
+            "C5"
+          ],
+          "rationale": "C1 and C5 give RATE's F1-score as 91.27%, not about 0.84."
+        },
+        "c004": {
+          "claim": "RATE incorporates stylistic alignment and retrieval feedback.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts describe RATE as RAG combined with multi-definition LLM-based validation; they never mention stylistic alignment or retrieval feedback."
+        },
+        "c005": {
+          "claim": "The BERT-based comparison model achieved a recall of 85.50% on the gold-standard dataset of 70 articles",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 reports BERT recall of 85.50%."
+        },
+        "c006": {
+          "claim": "RATE achieved an F1-score of 91.27% on the gold-standard dataset of 70 articles",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C5"
+          ],
+          "rationale": "C1 and C5 report RATE's F1-score as 91.27% on the 70-paper gold standard."
+        },
+        "c007": {
+          "claim": "One retrieval method is a sparse retriever.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 says two methods were explored: a dense and a sparse retriever."
+        },
+        "c008": {
+          "claim": "The combination of sparse and dense retrieval allows the system to retrieve supporting categories both through lexical overlap and semantic similarity.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "C4 explored the two retrievers as separate methods, not as a combined system. The lexical/semantic distinction appears elsewhere, but no excerpt describes these retrievers being combined to retrieve categories."
+        },
+        "c009": {
+          "claim": "Dense retrieval is based on sentence embeddings or dual-encoder models.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "C1 says dense retrieval maps queries and documents to continuous vectors and mentions bi-encoders as one architecture. No excerpt states that dense retrieval is specifically based on sentence embeddings or dual-encoder models."
+        },
+        "c010": {
+          "claim": "The dense retriever uses the Contriever model.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 states the Contriever model was employed for the dense retriever."
+        },
+        "c011": {
+          "claim": "The sparse retriever uses the BM25 algorithm.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 states the sparse retriever used the BM25 algorithm implemented in Pyterrier."
+        },
+        "c012": {
+          "claim": "This combination improves coverage for zero-shot classification labels that may not share vocabulary with the input text.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt reports that combining the retrievers improves coverage for labels lacking shared vocabulary with the input."
+        },
+        "c013": {
+          "claim": "B1 and B2 each have size B.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states |B1| = |B2| = B."
+        },
+        "c014": {
+          "claim": "In the BPIR converse proof, the set of non-user databases is partitioned into two blocks, B1 and B2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 divides the complement of U, the set {1,...,N}\\U, into two sets B1 and B2."
+        },
+        "c015": {
+          "claim": "The remaining, less correlated databases fall into B2.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts say nothing about correlation among databases or how databases are assigned to B2."
+        },
+        "c016": {
+          "claim": "In the second scenario, the Byzantine databases flip their contents from W̃ to W.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "In scenario 2 the true contents are W̃, and the adversarial nodes in B1 flip their contents into W."
+        },
+        "c017": {
+          "claim": "In the second scenario, the user collects the answer strings (A[i]_B1(W), A[i]_B2(W̃), A[i]_U(W̃)).",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 gives exactly this tuple of answer strings for scenario 2."
+        },
+        "c018": {
+          "claim": "Because this bias is structural rather than random, it guarantees a nonzero probability of decoding error whenever B1 and B2 are constructed this way.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts mention no structural bias and no nonzero error probability. The proof argues that the user cannot tell the two scenarios apart, which is a different point."
+        },
+        "c019": {
+          "claim": "The paper presents this as evidence that unifying the three functionalities under a single architecture yields measurable retrieval quality gains.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states up to 45% NDCG@10 improvements from jointly modeling all functionalities compared to individual modeling with the same architecture."
+        },
+        "c020": {
+          "claim": "These complementary signals would otherwise remain isolated in single-task setups.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts mention knowledge transfer across tasks but never describe signals remaining isolated in single-task setups."
+        },
+        "c021": {
+          "claim": "The UIA framework stands for Unified Information Access.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The paper title is 'A Personalized Dense Retrieval Framework for Unified Information Access', and C1 refers to the 'UIA framework' and 'universal information access'. Together these entail the expansion."
+        },
+        "c022": {
+          "claim": "The Lowe's dataset contains fewer data points for query by example and complementary item recommendation tasks.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 says Lowe's dataset contains fewer data points for these two tasks."
+        },
+        "c023": {
+          "claim": "An ablation study was conducted on the Lowe's dataset.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 says a thorough ablation study was conducted on the Lowe's dataset."
+        },
+        "c024": {
+          "claim": "Jointly modeling all information access functionalities in the UIA framework can yield up to 45% NDCG@10 improvement compared to individual (task-specific) modeling using the same dense retrieval architecture.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "C1 states up to 45% NDCG@10 improvement from joint modeling versus individual modeling with the same architecture."
+        },
+        "c025": {
+          "claim": "AdaPCR avoids document filtering during inference.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the method avoids document filtering during inference."
+        },
+        "c026": {
+          "claim": "Some methods try to make the language model robust against noisy inputs through synthesized noisy training contexts.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1: several works synthesize noisy contexts for LM training to make LM robust against noisy inputs."
+        },
+        "c027": {
+          "claim": "The MOEBQA routing strategy is end-to-end learned.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "MOEBQA is not mentioned in the excerpts."
+        },
+        "c028": {
+          "claim": "In MOEBQA, each example is assigned to only a few experts based on its underlying question type.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "MOEBQA is not mentioned in the excerpts."
+        },
+        "c029": {
+          "claim": "Modeling dependencies between passages helps address redundancy and diversity issues that arise from noisy, large-scale corpora.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C2"
+          ],
+          "rationale": "C2 says modeling dependencies between passages handles redundancy and promotes diversity; C1 ties redundancy and diversity to large, noisy corpora."
+        },
+        "c030": {
+          "claim": "The adaptive combination technique has only a tolerable computational overhead.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt discusses the computational overhead of the method."
+        },
+        "c031": {
+          "claim": "Knowledge distillation from cross-encoder rerankers improves the bi-encoder's ranking quality.",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C4"
+          ],
+          "rationale": "C4 says distilling a more capable teacher such as a cross-encoder is very useful for enhancing the bi-encoder, and C3 says cross-encoder relevance features transferred to retrievers boost performance."
+        },
+        "c032": {
+          "claim": "Karpukhin et al. first showed that using hard negatives sampled from BM25 top retrieved passages is sufficient for learning an effective BERT-based dense retriever.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states that Karpukhin et al. first demonstrated that hard negatives from BM25 top passages are sufficient for learning a fairly effective BERT-based dense retriever."
+        },
+        "c033": {
+          "claim": "Late interaction architectures, such as ColBERT, preserve token-level embeddings.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 states that ColBERT indexes a vector for every word, which amounts to preserving token-level embeddings."
+        },
+        "c034": {
+          "claim": "A gradient caching technique proposed by Gao et al. later enabled the RocketQA pipeline to run on a single GPU.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states that Gao et al. introduced gradient caching, allowing the RocketQA pipeline to run within a single GPU."
+        },
+        "c035": {
+          "claim": "Auto-encoder and contrastive learning-based pretraining methods are increasingly adopted to enhance semantic representations.",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 says that, more recently, auto-encoder and contrastive learning based pretraining methods have been widely adopted to enhance semantic representations."
+        },
+        "c036": {
+          "claim": "Better negative sampling strategies have contributed to stronger dense retrievers.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "Both excerpts describe hard negative mining and negative selection strategies as improving dense retriever effectiveness."
+        },
+        "c037": {
+          "claim": "The 3-hop reasoning chain starts from the question's main entity, Stephen Curry.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the 3-hop reasoning chain starts from the question's main entity, Stephen Curry."
+        },
+        "c038": {
+          "claim": "The paper makes a broader point that complex, multi-step reasoning chains require sequential retrieval rather than a single-pass lookup",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C2"
+          ],
+          "rationale": "C1 says a base retriever cannot retrieve all necessary information in a single step. C2 says traditional retrievers struggle with multi-hop retrieval and that GEAR adds a multi-step retrieval framework. Together these entail the claim."
+        },
+        "c039": {
+          "claim": "all-mpnet-base-v2 is an example of a suitable dense retriever for SciDocs and FiQA",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "None of the excerpts mention all-mpnet-base-v2, SciDocs, or FiQA."
+        },
+        "c040": {
+          "claim": "The GeAR paper notes that a base retriever cannot, by design, retrieve all necessary information in a single step for multi-hop questions.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 directly states that a base retriever cannot, by design, retrieve all necessary information in a single step."
+        },
+        "c041": {
+          "claim": "The multi-hop retrieval scenario is similar to the dense retriever selection problem described by Khramtsova et al.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "Neither Khramtsova et al. nor a dense retriever selection problem appears in the excerpts."
+        },
+        "c042": {
+          "claim": "The GeAR paper illustrates the limitation of a base retriever with the example question: \"In what year did Stephen Curry's father join the team from which he started his college basketball career?\"",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1's Table 1 gives this exact question as the motivating example of the base retriever's limitation."
+        },
+        "c043": {
+          "claim": "Syntactic typed dependencies help capture relationships between question words that indicate the expected answer type.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts say typed dependencies are used as semantic features and improve accuracy, but they never explain that they capture relationships between question words that indicate answer type."
+        },
+        "c044": {
+          "claim": "The question classification method achieved an accuracy of 87.6% on the UIUC dataset.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 reports 87.6% accuracy on the UIUC dataset using unigram and typed dependency features."
+        },
+        "c045": {
+          "claim": "The question classification method used maximum entropy classification.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 states the results were obtained using maximum entropy classification."
+        },
+        "c046": {
+          "claim": "The FPT dataset is smaller in size than the UIUC dataset.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt gives the size of either dataset."
+        },
+        "c047": {
+          "claim": "The question classification method used unigram features combined with typed dependency features.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 says the method was run 'with unigram feature and typed dependency feature'."
+        },
+        "c048": {
+          "claim": "Incorporating syntactic typed dependencies alongside simple unigram features improved classification performance over using unigrams alone.",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 states that integrating two simple dependency types improves accuracy by over 8.0% with common classifiers, which entails improvement over the baseline without them."
+        },
+        "c049": {
+          "claim": "The dual-encoder architecture follows Karpukhin et al. (2020).",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "None of the excerpts mention a dual-encoder architecture or Karpukhin et al. (2020); they cover TabMCQ tables and the XiaoIce chatbot."
+        },
+        "c050": {
+          "claim": "The ChatDoctor system builds on the pre-training paradigm pioneered by Lee et al. (2019) with the Inverse Cloze Task.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not mention ChatDoctor, Lee et al. (2019), or the Inverse Cloze Task."
+        },
+        "c051": {
+          "claim": "The Condenser-style pre-training architecture was proposed by Gao and Callan (2021b).",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not mention Condenser or Gao and Callan."
+        },
+        "c052": {
+          "claim": "The main guiding principles traditionally used in building IR models and tools have been efficiency and effectiveness.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states efficiency and effectiveness have been the main guiding principles in building IR models and tools."
+        },
+        "c053": {
+          "claim": "Addressing vocabulary mismatch and difficulty representing user information needs typically requires techniques such as query expansion.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "None of the excerpts discusses vocabulary mismatch or query expansion as a remedy for it."
+        },
+        "c054": {
+          "claim": "The reason assisting information seekers in locating a specific facet of information has rarely been addressed is due to the inherent difficulty of such a task.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the facet-locating problem has rarely been addressed due to the inherent difficulty of such a task."
+        },
+        "c055": {
+          "claim": "The second issue concerns accurately capturing and modeling a user's true information need.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt frames a 'second issue' about capturing or modeling a user's true information need."
+        },
+        "c056": {
+          "claim": "The paper is titled \"Annotation of Scientific Summaries for Information Retrieval\".",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "The source header of C1 gives this title."
+        },
+        "c057": {
+          "claim": "Sophisticated ranking algorithms cannot compensate for a fundamental mismatch between query representation and document representation.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt says ranking algorithms cannot compensate for a mismatch between query and document representations."
+        },
+        "c058": {
+          "claim": "ReFeed notes that both datasets suffer from insufficient annotated examples.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "ReFeed says the datasets lack retrieval feedback and stylistic variation, not that they have insufficient annotated examples; they are described as large-scale."
+        },
+        "c059": {
+          "claim": "CANARD and QReCC do not account for the stylistic alignment between queries and target documents.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 says these datasets do not capture stylistic variation, while ReFeed explicitly conditions rewrites on document style."
+        },
+        "c060": {
+          "claim": "The ReFeed paper draws on the RATE pipeline's experimental setup to benchmark its query-rewriting approach.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No RATE pipeline is mentioned in the excerpts."
+        },
+        "c061": {
+          "claim": "The ReFeed paper cites the gold-standard dataset of 70 annotated papers as one of two supervised learning resources supporting semantic reformulation.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The two cited supervised learning resources are CANARD and QReCC; no dataset of 70 annotated papers is mentioned."
+        },
+        "c062": {
+          "claim": "CANARD and QReCC provide pairs of conversational and standalone queries.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the datasets provide pairs of conversational and standalone queries."
+        },
+        "c063": {
+          "claim": "QReCC is by Anantha et al., published in 2021.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 cites QReCC as (Anantha et al. 2021)."
+        },
+        "c064": {
+          "claim": "C2F-RAG topped the leaderboard with the best nDCG@10 among all submissions",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C1"
+          ],
+          "rationale": "Table 1 is sorted by nDCG@10 and lists C2F-RAG at rank 1 with 0.848; C1 says C2F-RAG achieves the highest retrieval scores."
+        },
+        "c065": {
+          "claim": "Text-based reasoning involves converting videos into summaries and captions instead of processing raw video",
+          "verdict": "supported",
+          "evidence": [
+            "C2"
+          ],
+          "rationale": "C2 describes text-based reasoning as converting videos into summaries and captions rather than operating on video directly."
+        },
+        "c066": {
+          "claim": "C2F-RAG topped the leaderboard with the best related metrics among all submissions",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "C1 states that C2F-RAG achieves the highest retrieval scores. In Table 1 its values (0.848, 0.851, 0.853, 0.773, 0.832, 0.837) exceed MARQUIS-2's on every metric shown."
+        },
+        "c067": {
+          "claim": "The impact of MSM leakage on Robust04 is described as rather negligible or minimal.",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the changes on Robust04 are rather negligible."
+        },
+        "c068": {
+          "claim": "The different sensitivities to training leakage are largely due to how retrieval redundancy is handled across the two collections.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts attribute the difference to the time gap between document publication dates, not to how retrieval redundancy is handled."
+        },
+        "c069": {
+          "claim": "In Robust04-style setups, the full training corpus is still used despite the penalty factor.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions a penalty factor or the full training corpus being used."
+        },
+        "c070": {
+          "claim": "An example of a model order swap is monoBERT with MSM leakage slightly overtaking PACRR.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 states that monoBERT with MSM leakage would slightly overtake PACRR in the nDCG@10 ordering."
+        },
+        "c071": {
+          "claim": "For Common Core 2017, more models improve their effectiveness when trained with MSM leakage because the time gap between the New York Times Annotated Corpus and MS MARCO is smaller than for Robust04.",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 states this almost verbatim."
+        },
+        "c072": {
+          "claim": "In Robust04-style setups, leakage acts like reducing the effective number of clean training signals by 2B.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions a reduction of clean training signals by 2B."
+        },
+        "c073": {
+          "claim": "ConAE shrinks the index storage from 26.0G to 4.3G on MS MARCO",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "C1 states ConAE with 128-dim embeddings saves index storage from 26.0G to 4.3G on MS MARCO."
+        },
+        "c074": {
+          "claim": "Latency reductions in dense retrieval compression approaches typically range from 2x to 5x",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts give specific latency numbers but no general claim about the typical range of latency reductions across compression approaches."
+        },
+        "c075": {
+          "claim": "ConAE reduces retrieval latency from 17.152 ms to 3.942 ms per query on MS MARCO",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states the retrieval latency drops from 17.152 ms to 3.942 ms per query."
+        },
+        "c076": {
+          "claim": "ANCE embeddings are high-dimensional vectors of 768 dimensions",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C4"
+          ],
+          "rationale": "Table 4 in C4 lists ANCE under dimension 768, and C3 notes the 768-dimensional embeddings are the teacher's, with a 26.0G index."
+        },
+        "c077": {
+          "claim": "Latency reductions in such compression approaches occur due to reduced vector comparison costs and improved cache efficiency",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt explains latency reductions in terms of vector comparison costs or cache efficiency."
+        },
+        "c078": {
+          "claim": "ConAE achieves comparable retrieval performance to the ANCE (Teacher) model on MS MARCO when compressing embeddings to 128 dimensions",
+          "verdict": "supported",
+          "evidence": [
+            "C1"
+          ],
+          "rationale": "C1 states ConAE can achieve comparable performance with ANCE (Teacher) using 128-dimensional embeddings on MS MARCO."
+        },
+        "c079": {
+          "claim": "MOEBQA builds on the AdaPCR framework's insight that passages scored independently overlook important inter-passage dependencies",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts never mention AdaPCR or inter-passage dependencies; MOEBQA is motivated by the parameter competition problem instead."
+        },
+        "c080": {
+          "claim": "MOEBQA aligns retriever scores with answer likelihood as in Equation 1 of the AdaPCR formulation",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts contain no AdaPCR formulation and no alignment of retriever scores; Equation 1 here is H = BERT(I)."
+        },
+        "c081": {
+          "claim": "MOEBQA's expert-partitioned Transformer architecture improves robustness on complex, multi-hop biomedical questions",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts report improved performance on examination-based datasets but say nothing about robustness on multi-hop questions."
+        },
+        "c082": {
+          "claim": "The bottom blocks in MOEBQA are designed to capture general features common across question types.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "The excerpts state that the bottom blocks are shared by all examples and aim to capture general features."
+        },
+        "c083": {
+          "claim": "MOEBQA splits a pretrained Transformer model into bottom and top blocks.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "The excerpts state directly that MOEBQA splits a pretrained Transformer model into bottom and top blocks."
+        },
+        "c084": {
+          "claim": "In Biomedical Question Answering, different types of biomedical questions must compete for shared model parameters when answered by a single homogeneous model.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "The excerpts state that answering all questions with a homogeneous model leads different question types to compete for shared parameters."
+        },
+        "c085": {
+          "claim": "Wu et al. proposed addressing the cold start issue by incorporating auxiliary information beyond interaction history.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "C3 says Wu et al. leveraged LLMs with pre-trained web knowledge, not auxiliary information beyond interaction history per se."
+        },
+        "c086": {
+          "claim": "The fact that integration of LLMs into course recommendation systems remains largely unexplored presented an opportunity for the RAMO study",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C4"
+          ],
+          "rationale": "C3 says integration remains largely unexplored, presenting an opportunity; C4 notes the research gap motivating the study."
+        },
+        "c087": {
+          "claim": "The cold start problem arises because there is no historical data available for new users",
+          "verdict": "supported",
+          "evidence": [
+            "C3"
+          ],
+          "rationale": "C3 states there is no historical data for new users, known as cold start."
+        },
+        "c088": {
+          "claim": "The cold start problem is especially problematic in educational settings where new courses are frequently introduced.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "Excerpts discuss cold start for new users, not frequently introduced new courses."
+        },
+        "c089": {
+          "claim": "Wu et al.'s approach leveraged content-based features and side information such as course descriptions, prerequisites, and learner profiles to bridge the data sparsity gap.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "C3 describes Wu et al. as using LLMs with pre-trained knowledge; no mention of course descriptions, prerequisites, or learner profiles."
+        },
+        "c090": {
+          "claim": "Traditional recommender systems often rely on collaborative filtering methods based on preferences of similar users or historical course completions",
+          "verdict": "supported",
+          "evidence": [
+            "C3",
+            "C2"
+          ],
+          "rationale": "C3 says many prior studies used collaborative filtering based on preferences of similar users; C2 mentions reliance on prior course completions/historical data."
+        },
+        "c091": {
+          "claim": "Queries and relevance judgments for the target corpus are sometimes prohibitively costly or restricted to collect.",
+          "verdict": "supported",
+          "evidence": [
+            "C5",
+            "C1"
+          ],
+          "rationale": "C5 says queries and relevance judgements for the target corpus are often unavailable or prohibitive to collect due to costs or data access restrictions."
+        },
+        "c092": {
+          "claim": "GEAR does not require a specially engineered retriever architecture.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "GEAR is not mentioned anywhere in the excerpts."
+        },
+        "c093": {
+          "claim": "Dense retriever selection refers to the process by which GEAR chooses among conventional dense retrieval models to serve as the base retriever h_base.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts define dense retriever selection as identifying the most suitable DR for a target corpus. They do not mention GEAR or h_base."
+        },
+        "c094": {
+          "claim": "Simply choosing the dense retriever that performs best overall on a comprehensive leaderboard like MTEB is not a reliable strategy.",
+          "verdict": "supported",
+          "evidence": [
+            "C5",
+            "C4"
+          ],
+          "rationale": "C5 says overall top-performing DRs on MTEB may not be the most suitable for each corpus, and effectiveness varies unpredictably. C4 gives the example of a model ranked best on specific corpora but 48th overall."
+        },
+        "c095": {
+          "claim": "These challenges motivate the development of methods like LARMOR.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C3"
+          ],
+          "rationale": "C1 and C3 present LARMOR as addressing the challenge of selecting dense retrievers without target queries or labels, and under domain shift."
+        },
+        "c096": {
+          "claim": "Dense retrievers, like sparse counterparts, inherently struggle with multi-hop retrieval scenarios.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "Multi-hop retrieval is not discussed in the excerpts."
+        },
+        "c097": {
+          "claim": "Mixed-precision training was used to optimize memory usage and computational efficiency.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "C5 mentions mixed precision training but gives no stated purpose of optimizing memory or efficiency, and it is not linked to the relevant system."
+        },
+        "c098": {
+          "claim": "The training pipeline utilized mixed-precision training in some configurations.",
+          "verdict": "supported",
+          "evidence": [
+            "C5"
+          ],
+          "rationale": "C5 states that mixed precision training was used to train the retriever."
+        },
+        "c099": {
+          "claim": "The NEWSKVQA experiments were conducted using NVIDIA GPUs.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "None of the excerpts mention NEWSKVQA experiments."
+        },
+        "c100": {
+          "claim": "The Inverse Cloze Task is implemented through XiaoIce's topic shift detector",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts never mention XiaoIce or a topic shift detector; they describe ICT only as a retrieval pre-training task."
+        },
+        "c101": {
+          "claim": "Body First Selection (BFS) uses sentences from the first section of a Wikipedia article as anchors to the rest of the text",
+          "verdict": "supported",
+          "evidence": [
+            "C4"
+          ],
+          "rationale": "C4 states that BFS utilizes the sentences from the first section of a Wikipedia article as anchors to the rest sections of texts."
+        },
+        "c102": {
+          "claim": "XiaoIce's topic shift detector monitors dialogue signals like bland user inputs such as 'OK' or 'I see' to determine when retrieval should be re-triggered",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "Neither XiaoIce nor any topic shift detector appears in the excerpts."
+        },
+        "c103": {
+          "claim": "Inverse Cloze Task, Body First Selection, and Wiki Link Prediction collectively feed into a five-factor topic selection model used by XiaoIce",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "No excerpt mentions a five-factor topic selection model or XiaoIce."
+        },
+        "c104": {
+          "claim": "In Body First Selection (BFS), a randomly sampled passage from later sections is considered the matched text",
+          "verdict": "supported",
+          "evidence": [
+            "C4",
+            "C1"
+          ],
+          "rationale": "C4 says BFS takes a randomly sampled passage in the following sections as the matched text; C1 likewise treats another passage from the same page as the positive context."
+        },
+        "c105": {
+          "claim": "Body First Selection (BFS) randomly samples one sentence from the first section of a Wikipedia page to act as a pseudo query",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "C1 and C4 both say BFS randomly samples a sentence from the first section and uses it as the query (pseudo query)."
+        },
+        "c106": {
+          "claim": "On the DL19 dataset, synonym substitution causes a decrease of 0.143 NDCG in Stage 2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "The excerpts state that on DL19, Stage 2 drops by 0.143 NDCG under synonym substitution."
+        },
+        "c107": {
+          "claim": "The sensitivity to misspellings highlights a persistent weakness in reranker robustness to noisy, real-world query formulations compared to clean, well-formed text.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts discuss the robustness of generative retrieval and dense retrieval, not rerankers. They do not frame the misspelling results as a persistent weakness in reranker robustness to real-world queries."
+        },
+        "c108": {
+          "claim": "On the DL19 dataset, reordering causes a decrease of 0.014 NDCG in Stage 2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "The excerpts state that on DL19, Stage 2 drops by 0.014 NDCG under reordering."
+        },
+        "c109": {
+          "claim": "Reordering tends to preserve more of the original semantic and lexical content, including key entities and terms.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "Reordering is described as near-invariant, with the highest candidate and token overlap. The excerpts do not explicitly say it preserves key entities and terms, so this goes beyond what is stated."
+        },
+        "c110": {
+          "claim": "On the DL19 dataset, misspelling causes a decrease of 0.217 NDCG in Stage 2.",
+          "verdict": "supported",
+          "evidence": [
+            "C1",
+            "C4"
+          ],
+          "rationale": "The excerpts state that on DL19, Stage 2 drops by 0.217 NDCG under misspelling."
+        },
+        "c111": {
+          "claim": "Paraphrasing tends to preserve more of the original semantic and lexical content, including key entities and terms.",
+          "verdict": "not_supported",
+          "evidence": [],
+          "rationale": "The excerpts do not discuss whether paraphrasing preserves lexical content or key entities and terms. They only report a 0.073 NDCG drop for paraphrasing, which is larger than the 0.014 drop for reordering."
+        }
+      }
+    }
+  },
+  "cost": {
+    "cap_usd": 3.0,
+    "spent_usd": 0.87737,
+    "api_calls": 40,
+    "cache_hits": 0,
+    "spent_by_model_usd": {
+      "claude-sonnet-5": 0.34273,
+      "claude-opus-5-5": 0.53464
+    }
+  },
+  "rag_pipeline_commit": "9db2e05b81e8a8c977af0cd103289322ba97f731",
+  "eval_harness_commit": "68663ec6f6ba7420d71d06a9a3c9a894c0e0ca0f",
+  "finished_at": "2026-10-10T20:06:54.294280+00:00"
+}

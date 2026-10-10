@@ -19,7 +19,7 @@ run. Results are written to eval/results/faithfulness_<test set>.json.
 Usage:
     python scripts/evaluate_retrieval.py                       # data/eval/test_questions.json
     python scripts/evaluate_retrieval.py eval/questions.jsonl  # verified questions only
-    python scripts/evaluate_retrieval.py --judge-model claude-opus-5-5 --cost-cap 3
+    python scripts/evaluate_retrieval.py --judge-model claude-sonnet-5 --cost-cap 3  # Step 1's judge
 """
 import argparse
 import json
@@ -51,7 +51,10 @@ from query_rag import (  # noqa: E402
 DEFAULT_TEST_SET = ROOT / "data" / "eval" / "test_questions.json"
 RESULTS_DIR = ROOT / "eval" / "results"
 JUDGE_CACHE_DIR = ROOT / "eval" / "cache" / "judge"
-DEFAULT_JUDGE_MODEL = "claude-sonnet-5"
+# claude-opus-5-5 agreed best with human labels in Step 2 (binary kappa 0.9816 vs 0.9266
+# for claude-sonnet-5; eval/results/judge_agreement.json). Step 1's saved results were
+# judged by claude-sonnet-5; pass --judge-model claude-sonnet-5 to reproduce them.
+DEFAULT_JUDGE_MODEL = "claude-opus-5-5"
 DEFAULT_COST_CAP_USD = float(os.environ.get("EVAL_COST_CAP_USD", "5"))
 TOP_K = 5
 

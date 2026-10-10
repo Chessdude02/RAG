@@ -2,6 +2,20 @@
 
 Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-10 in Step 2: label set built, **waiting for the user's labels**.
 
+## Resume here (next session)
+- **State:** Step 2, part 1 is committed (RAG `d94bb4d`). The user has been told the count (111 claims) and where to label.
+- **Waiting on the user:** they fill in `eval/labels/labels.csv` (or the `label` field in `to_label.jsonl`, not both) with `supported` / `not_supported` / `contradicted` for c001–c111.
+- **Before running anything:**
+  1. Check every claim has a valid label. If any are blank or invalid, or both files are filled in and disagree, stop and ask.
+  2. Count the unsupported labels. If there are fewer than 37 (under 1/3), tell the user before going on.
+- **Then do Step 2, part 2** (below): add `eval/agreement.py` in eval-harness with fake-data tests, then a RAG runner that judges the same 111 fixed claims with `claude-sonnet-5` and `claude-opus-5-5`.
+  - Group the claims by question and use that question's contexts.
+  - Opus can't use forced `tool_choice`, so use structured outputs.
+  - Set a cost cap.
+- **Report for each judge:** accuracy, precision and recall on not-supported (not_supported + contradicted), kappa (binary and 3-class) and every disagreement. Higher agreement becomes the default.
+- **Finish:** one commit, then stop.
+- **Total spend so far:** about $3.69.
+
 ## Setup
 - **RAG repo:** `C:\Users\vedan\OneDrive\python\RAG\rag-pipeline`
 - **eval-harness:** `C:\Users\vedan\OneDrive\python\eval-harness`

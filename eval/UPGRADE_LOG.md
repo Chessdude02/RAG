@@ -1,6 +1,6 @@
 # Eval upgrade log
 
-Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-09 after Step 1; resume at Step 2.
+Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-10 in Step 2: label set built, **waiting for the user's labels**.
 
 ## Setup
 - **RAG repo:** `C:\Users\vedan\OneDrive\python\RAG\rag-pipeline`
@@ -85,7 +85,30 @@ Total spend for Step 1: about $3.16, including a $0.0169 smoke test.
 3. **Claim granularity differs by judge.** In the smoke test, Opus split "introduced in 2030 by OpenAI" into 2 claims; Sonnet kept it as 1. For Step 2, extract claims **once** (fixed claim list) and have both judges label the same claims, so agreement is comparable.
 4. **The result JSONs record parent commits** (`f374d0e`, `252a726`) because the runs happened before committing. The code that produced them is `ca2109b` / `68663ec`.
 
-## Next: Step 2, validate the judge
+## Step 2, part 1: build the label set (done 2026-10-10)
+`eval/build_label_set.py` built **111 claims**:
+- 54 from the real answers to the 20 verified questions (q009 and q018 had none);
+- 57 from deliberately bad answers: 30 wrong-context and 27 no-context. q012's no-context answer had none.
+
+How it was built:
+- 3 claims per answer, a seeded random sample (seed 42), never chosen by any judge verdict.
+- Claims were split once by `claude-sonnet-5`.
+- No judge has seen these claims yet.
+- Spend: $0.53, including an $0.23 first attempt.
+
+**First attempt:**
+- **What happened:** 9 of 10 wrong-context answers made 0 claims, because sonnet-5 said the excerpts were off-topic even when told to answer anyway.
+- **Fix:** the prompt now says outright that it is building unfaithful test answers for a fact-checker.
+
+**Files** (`eval/labels/`):
+- `to_label.jsonl` (label field empty)
+- `to_label.md` (readable, grouped by question)
+- `labels.csv` (claim_id,label)
+- `_hidden_sources.jsonl` (answer source; the user shouldn't open it before labeling)
+
+**Unsupported share:** at least 1/3 needs at least 37 unsupported claims. 57/111 = 51% come from bad answers, so this is likely, but it isn't confirmed until the labels are in.
+
+## Step 2, part 2 (after labels): validate the judge
 1. Build the labeling set:
    - real hybrid answers to the 20 verified questions (they can be reused from `eval/results/faithfulness_questions.json`);
    - plus one bad answer per question, generated with another question's contexts (about half) or with no context (about half).

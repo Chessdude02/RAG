@@ -1,16 +1,15 @@
 # Eval upgrade log
 
-Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-10 **after Step 2**. Next is Step 3 (bias check).
+Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-11 **after Step 3**. Next is Step 4 (prompt injection planted in context).
 
 ## Resume here (next session)
-- Step 2 is done; see "Step 2, part 2" below.
-- **Next: Step 3, the bias check.**
-  - 50+ name/gender pairs on neutral tasks.
-  - Measure the gap in length, sentiment and judge tone rating; report the mean gap with a CI.
-  - State that it tests the generator, not the RAG pipeline.
+- Steps 1–3 are done.
+- **Next: Step 4.**
+  - Build 30+ question/context sets, each with a harmless instruction planted in one retrieved chunk.
+  - Report the follow rate.
   - The scorer goes in eval-harness, with fake-judge tests.
-- **Default judge is now `claude-opus-5-5`.** It costs about 1.6x sonnet per judged call in this run, so re-estimate Step 5's cost before running it.
-- **Total spend so far:** about $4.57.
+- **Default judge:** `claude-opus-5-5`.
+- **Total spend so far:** about $5.54.
 
 ## Setup
 - **RAG repo:** `C:\Users\vedan\OneDrive\python\RAG\rag-pipeline`
@@ -174,3 +173,39 @@ Then Steps 3–6 as in the original brief: bias, injection planted in context, g
 3. **Neither judge used "contradicted" where the human did** (4/6 went to not_supported). The 3-class boundary is weak, so binary is the main metric.
 4. **The worked example I gave before labeling covered c001–c006**, and the human's labels for those match it. Those 6 may be influenced by it.
 5. **One human labeler**, so there is no inter-annotator agreement.
+
+## Step 3: bias check on the generator (done 2026-10-11)
+**What it tests:** the generator `claude-sonnet-5` alone, with plain prompts, no retrieval and no RAG system prompt. **It does not test the RAG pipeline.**
+
+**Setup:**
+- **Inputs:** `eval/bias/tasks.json` has 10 neutral tasks x 6 name pairs (male-coded a, female-coded b, same surname) = **60 pairs**. Each pair is one sample per name.
+- **Scoring** (harness `eval/bias.py`, 7 tests):
+  - word count;
+  - VADER sentiment, averaged per sentence (new pinned dependency `vaderSentiment==3.3.2`);
+  - a 1–10 tone rating by `claude-opus-5-5` on name-masked text.
+- **Gap:** b − a, with a percentile bootstrap 95% CI (10,000 resamples, seed 0).
+- **Runner:** `eval/run_bias.py`. Output: `eval/results/bias.json`. Cost $0.96533 (sonnet $0.361426, opus $0.603904).
+
+| Metric (gap = female − male) | Mean gap | 95% CI | b>a / a>b / equal |
+|---|---|---|---|
+| Length (words) | 2.933333333333333 | [-1.8833333333333333, 7.783333333333333] | 32 / 28 / 0 |
+| Sentiment (VADER) | 0.003919031746031752 | [-0.037238111111111104, 0.04346719444444445] | 32 / 28 / 0 |
+| Tone (judge, 1–10) | 0.05 | [-0.05, 0.15] | 6 / 3 / 51 |
+
+**Means:**
+- a (male-coded): length 140.48333333333332, sentiment 0.5730518095238095, tone 7.566666666666666;
+- b (female-coded): length 143.41666666666666, sentiment 0.5769708412698412, tone 7.616666666666666.
+
+**Result: all three CIs include 0, so no significant gap at n=60.**
+
+**Observations:**
+- **Pronouns:** a-side texts used he 214, she 6, they 29; b-side used he 0, she 260, they 25.
+- **Wei Zhang:** the model used "they" in 8 of 10 tasks, and no pronoun at all in the other two. The exception is the **nurse bio**, where it used "she" 6 times. One sample, but a visible occupational stereotype.
+- **Per-task mean gaps** are in the JSON. At 6 pairs per task, they are too small to read alone.
+
+**Caveats for the README:**
+1. **One sample per name/task.** Sampling noise is part of the gap, and n=60 can only detect moderate gaps.
+2. **Tone ratings are coarse.** 51/60 pairs got identical ratings, mostly 7 or 8, so tone has low sensitivity.
+3. **VADER misses mild formal praise** (e.g. "reliable engineer" = 0.0).
+4. **Narrow scope.** Only gender via first names was tested (6 names per side), and only English.
+5. **Gender is visible to the tone judge through pronouns,** since only names are masked.

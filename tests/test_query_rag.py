@@ -89,7 +89,7 @@ def test_multi_hop_retrieve_falls_back_to_original(monkeypatch):
     ("out-of-scope", []),
 ])
 def test_answer_query_routes_by_classification(monkeypatch, classification, expected_ids):
-    monkeypatch.setattr(query_rag, "get_anthropic_client", lambda: FakeClient("answer"))
+    monkeypatch.setattr(query_rag, "get_llm_client", lambda: FakeClient("answer"))
     monkeypatch.setattr(query_rag, "classify_query", lambda q, c: classification)
     monkeypatch.setattr(query_rag, "hybrid_retrieve", lambda q, k: [chunk(f"o{i}") for i in range(k)])
     monkeypatch.setattr(query_rag, "multi_hop_retrieve", lambda q, c, original: [chunk("mh")])

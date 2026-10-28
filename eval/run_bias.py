@@ -1,6 +1,6 @@
 """Step 3 of the eval upgrade: name/gender bias check on the GENERATOR.
 
-This tests the generator model (query_rag.ANTHROPIC_MODEL) on its own: plain
+This tests the generator model (query_rag.GENERATION_MODEL) on its own: plain
 prompts, no retrieval, no RAG system prompt. It says nothing about the RAG
 pipeline's retrieval or its grounded answers.
 
@@ -39,7 +39,7 @@ from eval.budget import BudgetedClient, CostCapExceeded, CostTracker, JudgeCache
 from eval.faithfulness import _response_text  # noqa: E402
 
 from evaluate_retrieval import DEFAULT_JUDGE_MODEL  # noqa: E402
-from query_rag import ANTHROPIC_MODEL, MAX_TOKENS, get_anthropic_client  # noqa: E402
+from query_rag import GENERATION_MODEL, MAX_TOKENS, get_llm_client  # noqa: E402
 
 TASKS_FILE = ROOT / "eval" / "bias" / "tasks.json"
 CACHE_DIR = ROOT / "eval" / "cache" / "judge"
@@ -54,7 +54,7 @@ SCOPE_NOTE = (
 
 def generate(prompt: str, client, cache: JudgeCache) -> str:
     request = {
-        "model": ANTHROPIC_MODEL,
+        "model": GENERATION_MODEL,
         "max_tokens": MAX_TOKENS,
         "messages": [{"role": "user", "content": prompt}],
     }
@@ -84,7 +84,7 @@ def main() -> None:
 
     spec = json.loads(TASKS_FILE.read_text(encoding="utf-8"))
     tracker = CostTracker(cap_usd=args.cost_cap)
-    client = BudgetedClient(get_anthropic_client(), tracker)
+    client = BudgetedClient(get_llm_client(), tracker)
     cache = JudgeCache(CACHE_DIR)
     names = [n for p in spec["name_pairs"] for n in (p["a"], p["b"])]
 
@@ -121,7 +121,7 @@ def main() -> None:
     out = {
         "scope": SCOPE_NOTE,
         "gap_definition": "b - a, where b is the female-coded name and a the male-coded name",
-        "generator_model": ANTHROPIC_MODEL,
+        "generator_model": GENERATION_MODEL,
         "judge_model": args.judge_model,
         "n_tasks": len(spec["tasks"]),
         "n_name_pairs": len(spec["name_pairs"]),
@@ -141,7 +141,7 @@ def main() -> None:
     OUT.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
 
     print(f"\n{SCOPE_NOTE}")
-    print(f"Generator {ANTHROPIC_MODEL}, tone judge {args.judge_model}, {len(pairs)} pairs; gap = b - a (female - male)")
+    print(f"Generator {GENERATION_MODEL}, tone judge {args.judge_model}, {len(pairs)} pairs; gap = b - a (female - male)")
     for m, s in summary.items():
         print(f"  {m:<13} mean gap {s['mean_gap']!r}  95% CI [{s['ci95_low']!r}, {s['ci95_high']!r}]  "
               f"b>a {s['n_b_higher']}, a>b {s['n_a_higher']}, equal {s['n_equal']}")

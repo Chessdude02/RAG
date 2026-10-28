@@ -42,7 +42,7 @@ def main() -> None:
         warm()
 
     # Count tokens on every Claude call answer_query makes (classify, decompose, generate).
-    client = query_rag.get_anthropic_client()
+    client = query_rag.get_llm_client()
     original_create = client.messages.create
     usage = {"input": 0, "output": 0}
 

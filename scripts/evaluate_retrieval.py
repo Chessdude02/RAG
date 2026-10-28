@@ -40,10 +40,10 @@ from eval.budget import BudgetedClient, CostCapExceeded, CostTracker, JudgeCache
 from eval.faithfulness import aggregate, score_record  # noqa: E402
 
 from query_rag import (  # noqa: E402
-    ANTHROPIC_MODEL,
+    GENERATION_MODEL,
     build_context,
     generate_answer,
-    get_anthropic_client,
+    get_llm_client,
     hybrid_retrieve,
     retrieve_relevant_chunks,
 )
@@ -51,10 +51,11 @@ from query_rag import (  # noqa: E402
 DEFAULT_TEST_SET = ROOT / "data" / "eval" / "test_questions.json"
 RESULTS_DIR = ROOT / "eval" / "results"
 JUDGE_CACHE_DIR = ROOT / "eval" / "cache" / "judge"
-# claude-opus-5-5 agreed best with human labels in Step 2 (binary kappa 0.9816 vs 0.9266
-# for claude-sonnet-5; eval/results/judge_agreement.json). Step 1's saved results were
-# judged by claude-sonnet-5; pass --judge-model claude-sonnet-5 to reproduce them.
-DEFAULT_JUDGE_MODEL = "claude-opus-5-5"
+# ministral-8b-latest agreed best with human labels in the Mistral round of Step 2
+# (binary kappa 0.7431 vs 0.6504 for ministral-3b-latest; eval/results/judge_agreement.json).
+# The Claude round picked claude-opus-5-5 (judge_agreement_claude.json). Step 1's saved
+# results were judged by claude-sonnet-5; pass --judge-model claude-sonnet-5 to reproduce them.
+DEFAULT_JUDGE_MODEL = "ministral-8b-latest"
 DEFAULT_COST_CAP_USD = float(os.environ.get("EVAL_COST_CAP_USD", "5"))
 TOP_K = 5
 
@@ -223,7 +224,7 @@ def main() -> None:
 
     test_set = load_test_set(args.test_set)
     tracker = CostTracker(cap_usd=args.cost_cap)
-    client = BudgetedClient(get_anthropic_client(), tracker)
+    client = BudgetedClient(get_llm_client(), tracker)
     cache = JudgeCache(JUDGE_CACHE_DIR)
 
     report = evaluate(test_set, client, args.judge_model, cache, k=TOP_K)
@@ -231,7 +232,7 @@ def main() -> None:
         {
             "test_set": args.test_set.resolve().relative_to(ROOT).as_posix(),
             "n_questions_in_set": len(test_set),
-            "generator_model": ANTHROPIC_MODEL,
+            "generator_model": GENERATION_MODEL,
             "judge_model": args.judge_model,
             "cost": tracker.summary(),
             "rag_pipeline_commit": _git_commit(ROOT),

@@ -1,16 +1,15 @@
 # Eval upgrade log
 
-Working log for the eval upgrade (branch `eval-upgrade` in both repos). Paused 2026-10-11 **after Step 4**. Next is Step 5 (CI gate thresholds plus planted failures).
+Working log for the eval upgrade (branch `eval-upgrade` in both repos). Steps 1–4 were done on Claude. On 2026-10-15 the Anthropic credit ran out mid-Step-5 and the user moved the **whole project to free APIs** (Gemini, then Mistral). Step 2 was re-run on Mistral on 2026-10-27.
 
 ## Resume here (next session)
-- Steps 1–4 are done.
-- **Next: Step 5.**
-  - Extend `eval-gate.yml` with thresholds against a saved baseline.
-  - Plant 5 failures one at a time (weaker prompt, contexts shuffled, top-k=1, smaller model, citation rule removed). Record caught or missed for each, and revert each one.
-  - Then push ONE through CI on a throwaway branch, with the minimal workflow change.
-- **Before Step 5:** re-estimate its cost, since the opus judge is the default now, and tell the user before spending.
-- **Default judge:** `claude-opus-5-5`.
-- **Total spend so far:** about $6.50.
+- **Provider:** Mistral free tier, via `llm_client.py` (identical copy in both repos). Generator `ministral-14b-latest`; default judge `ministral-8b-latest` (Step 2 re-run below). Cost $0.
+- **Next: Step 5** (gate thresholds against a saved baseline + 5 planted failures, one through CI).
+  - The Step 5 code (harness `gate/baseline.py`, `eval/citations.py`, `scripts/make_baseline.py`; here `eval/run_planted_failures.py`) is written but uncommitted.
+  - `eval/planted_failures/*.patch` were made against the old `query_rag.py`: regenerate them. "Smaller model" becomes 14b -> 3b.
+  - `eval/gate_baseline.json` and `eval/results/gate_runs/clean_*` are Claude runs: obsolete, rebuild on Mistral.
+  - The CI secret must become `MISTRAL_API_KEY`.
+- **Steps 1, 3, 4 numbers below are Claude numbers.** Re-measuring them on Mistral needs the user's go-ahead.
 
 ## Setup
 - **RAG repo:** `C:\Users\vedan\OneDrive\python\RAG\rag-pipeline`
@@ -259,3 +258,34 @@ Then Steps 3–6 as in the original brief: bias, injection planted in context, g
 3. **Planted after retrieval,** so retrieval and multi-hop are not tested.
 4. **One generation per set** (sampling noise).
 5. **Flagging changes the answer.** 30/40 answers spend text warning about the injection. That is good for safety, but it is extra user-facing text.
+
+## Provider switch to free APIs (2026-10-15 .. 2026-10-27)
+- **Why:** Anthropic credit ran out; the user will not spend money.
+- **`llm_client.py`** (harness `eval/llm_client.py`, here `scripts/llm_client.py`, drift-tested): keeps the Anthropic `messages.create` shape and routes by model name: `claude-*` -> Anthropic, `gemini-*` -> Google, `mistral-*`/`ministral-*`/... -> Mistral (OpenAI-compatible endpoints). Throttles and retries 429/5xx per provider. Non-Anthropic calls cost $0 in `budget.py`.
+- **Gemini** (tried first): free tier is ~20 requests/day per model and 503s at peak. Dropped.
+- **Mistral**: the free tier only serves the Ministral models (`mistral-small`/`medium` give 429 with limit 0, `mistral-large` 403).
+- **Re-ask:** small judges sometimes skip a claim. `judge_claims` now re-asks skipped claims once, on their own. Still missing -> `JudgeError` (gate runs fail closed); `validate_judge.py` instead scores it as the worst case (binary opposite of the human label). The judge prompt is unchanged.
+
+## Step 2 re-run on Mistral (2026-10-27)
+Same 111 claims, same labels, same decision rule (higher binary kappa; tie keeps `ministral-8b-latest`). Claude result kept as `eval/results/judge_agreement_claude.json`, Gemini as `judge_agreement_gemini.json`; Mistral is `judge_agreement.json`.
+
+| n=111 | ministral-8b-latest | ministral-3b-latest |
+|---|---|---|
+| Accuracy, 3-class | 0.7927927927927928 | 0.7837837837837838 |
+| Accuracy, binary | 0.8738738738738738 | 0.8288288288288288 |
+| Unsupported precision | 0.8541666666666666 (41/48) | 0.8085106382978723 (38/47) |
+| Unsupported recall | 0.8541666666666666 (41/48) | 0.7916666666666666 (38/48) |
+| Kappa, binary | 0.7430555555555555 | 0.6504226752859273 |
+| Kappa, 3-class | 0.6187275985663083 | 0.578147268408551 |
+| Re-asked / missing after re-ask | c057, c111 / none | c048 / none |
+| Disagreements (binary) | 23 (14) | 24 (19) |
+
+**Result:** `ministral-8b-latest` is the default judge.
+
+Binary kappa across rounds: claude-opus-5-5 0.9816011934361014, claude-sonnet-5 0.9265873015873016, gemini-3.5-flash-lite 0.9262213359920239, gemini-3.5-flash 0.9089118660758247, ministral-8b-latest 0.7430555555555555, ministral-3b-latest 0.6504226752859273.
+
+**Caveats for the README:**
+1. **The Mistral judge is much weaker:** 14/111 binary disagreements vs 1 for opus. The gate's claim_support_rate will be noisier, so faithfulness-only regressions are harder to catch.
+2. **8B over-uses "contradicted"** (10 vs 6 human); 3B never uses it.
+3. **3B returned invalid JSON once** (strict schema on); a rerun succeeded. In a gate run that is a scoring error and the run fails closed.
+4. **Call counts not preserved:** a later fully cached rerun rewrote the `cost` block (0 API calls, 43 cache hits). Verdicts are identical. Spend was $0.

@@ -43,7 +43,7 @@ from eval.injection import canary_present, judge_compliance, plant, summarize  #
 
 from build_label_set import fetch_chunks  # noqa: E402
 from evaluate_retrieval import DEFAULT_JUDGE_MODEL  # noqa: E402
-from query_rag import ANTHROPIC_MODEL, generate_answer, get_anthropic_client  # noqa: E402
+from query_rag import GENERATION_MODEL, generate_answer, get_llm_client  # noqa: E402
 
 PAYLOADS_FILE = ROOT / "eval" / "injection" / "payloads.json"
 STEP1_RESULTS = [
@@ -87,7 +87,7 @@ def main() -> None:
     payloads = json.loads(PAYLOADS_FILE.read_text(encoding="utf-8"))["payloads"]
     sets = load_sets()
     tracker = CostTracker(cap_usd=args.cost_cap)
-    client = BudgetedClient(get_anthropic_client(), tracker)
+    client = BudgetedClient(get_llm_client(), tracker)
     cache = JudgeCache(CACHE_DIR)
 
     results, stopped = [], None
@@ -122,7 +122,7 @@ def main() -> None:
         "scope": "Instruction planted after retrieval into one of the real top-5 chunks; tests the "
                  "generation step (production model, system prompt and context format), not "
                  "retrieval of the poisoned chunk or the classifier/multi-hop path.",
-        "generator_model": ANTHROPIC_MODEL,
+        "generator_model": GENERATION_MODEL,
         "judge_model": args.judge_model,
         "n_sets": len(results),
         "stopped_early": stopped,

@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from query_rag import (  # noqa: E402
     MULTI_HOP_TOP_K,
-    get_anthropic_client,
+    get_llm_client,
     hybrid_retrieve,
     multi_hop_retrieve,
 )
@@ -42,7 +42,7 @@ def main() -> None:
     with open(QUESTIONS_PATH, "r", encoding="utf-8") as f:
         questions = [json.loads(line) for line in f if line.strip()]
 
-    client = get_anthropic_client() if use_llm else None
+    client = get_llm_client() if use_llm else None
     rows = []
     for q in questions:
         relevant = set(q["relevant_chunk_ids"])

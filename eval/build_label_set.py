@@ -45,7 +45,7 @@ sys.path.insert(0, str(EVAL_HARNESS_DIR))
 from eval.budget import BudgetedClient, CostTracker, JudgeCache  # noqa: E402
 from eval.faithfulness import extract_claims  # noqa: E402
 
-from query_rag import ANTHROPIC_MODEL, build_context, get_anthropic_client, get_collection  # noqa: E402
+from query_rag import GENERATION_MODEL, build_context, get_llm_client, get_collection  # noqa: E402
 
 STEP1_RESULTS = ROOT / "eval" / "results" / "faithfulness_questions.json"
 LABELS_DIR = ROOT / "eval" / "labels"
@@ -93,7 +93,7 @@ def generate_bad_answer(client, question: str, wrong_chunks: list[dict] | None) 
     else:
         prompt = WRONG_CONTEXT_PROMPT.format(context=build_context(wrong_chunks), question=question)
     response = client.messages.create(
-        model=ANTHROPIC_MODEL,
+        model=GENERATION_MODEL,
         max_tokens=1024,
         thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
@@ -110,7 +110,7 @@ def main() -> None:
         raise RuntimeError("expected Step 1 results for all 20 verified questions")
 
     tracker = CostTracker(cap_usd=COST_CAP_USD)
-    client = BudgetedClient(get_anthropic_client(), tracker)
+    client = BudgetedClient(get_llm_client(), tracker)
     cache = JudgeCache(JUDGE_CACHE_DIR)
     rng = random.Random(SEED)
 

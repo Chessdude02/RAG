@@ -1,17 +1,23 @@
-"""Retrieve relevant chunks from Chroma and generate a cited answer with the Anthropic API."""
+"""Retrieve relevant chunks from Chroma and generate a cited answer with an LLM
+(Mistral free tier by default; gemini-* and claude-* models also work, see llm_client.py)."""
 import json
+import os
 import re
 import sys
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import anthropic
 import chromadb
 import numpy as np
 from dotenv import load_dotenv
 from rank_bm25 import BM25Okapi
 from sentence_transformers import CrossEncoder, SentenceTransformer
+
+try:
+    from .llm_client import LLMClient, get_client
+except ImportError:  # imported as a top-level module (scripts/ on sys.path)
+    from llm_client import LLMClient, get_client
 
 load_dotenv()
 
@@ -20,7 +26,7 @@ CHUNKS_PATH = Path(__file__).resolve().parent.parent / "data" / "chunks" / "chun
 COLLECTION_NAME = "rag_papers"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-ANTHROPIC_MODEL = "claude-sonnet-5"
+GENERATION_MODEL = os.environ.get("RAG_GENERATION_MODEL", "ministral-14b-latest")
 MAX_TOKENS = 4096  # includes adaptive thinking tokens; 1024 could leave no room for the answer
 TOP_K = 5
 CANDIDATE_POOL = 20  # per-retriever candidates fed into RRF, ahead of the final top-k
@@ -66,7 +72,6 @@ e.g. [source: paper_title, chunk_2][source: paper_title, chunk_5]."""
 
 _embedding_model = None
 _collection = None
-_anthropic_client = None
 _bm25_index = None
 _bm25_chunks = None
 _cross_encoder = None
@@ -96,11 +101,8 @@ def get_collection():
     return _collection
 
 
-def get_anthropic_client() -> anthropic.Anthropic:
-    global _anthropic_client
-    if _anthropic_client is None:
-        _anthropic_client = anthropic.Anthropic()
-    return _anthropic_client
+def get_llm_client() -> LLMClient:
+    return get_client()
 
 
 def retrieve_relevant_chunks(query: str, n_results: int = TOP_K) -> list[dict]:
@@ -235,15 +237,15 @@ def hybrid_retrieve(query: str, k: int = TOP_K, candidate_pool: int = CANDIDATE_
     return rerank(query, pooled_chunks, k=k)
 
 
-def extract_text(response: anthropic.types.Message) -> str:
-    """Pull the text out of a Claude response, skipping any leading ThinkingBlock."""
+def extract_text(response) -> str:
+    """Pull the text out of a response, skipping any leading thinking block."""
     for block in response.content:
         if block.type == "text":
             return block.text
     raise ValueError("No text block found in response.content")
 
 
-def classify_query(query: str, client: anthropic.Anthropic) -> str:
+def classify_query(query: str, client: LLMClient) -> str:
     """Classify a query as "factual", "multi-hop", or "out-of-scope".
 
     The category picks the retrieval strategy in answer_query: out-of-scope is
@@ -252,7 +254,7 @@ def classify_query(query: str, client: anthropic.Anthropic) -> str:
     """
     prompt = QUERY_CLASSIFICATION_PROMPT.format(query=query)
     response = client.messages.create(
-        model=ANTHROPIC_MODEL,
+        model=GENERATION_MODEL,
         max_tokens=20,
         # Thinking is on by default for this model and can spend the whole
         # 20-token budget, leaving no text block (crashed 3/44 gate cases).
@@ -270,12 +272,12 @@ def classify_query(query: str, client: anthropic.Anthropic) -> str:
     return "factual"  # unparseable response: fail open into the normal pipeline
 
 
-def decompose_query(query: str, client: anthropic.Anthropic) -> list[str]:
+def decompose_query(query: str, client: LLMClient) -> list[str]:
     """Split a multi-hop question into up to MAX_SUB_QUESTIONS single-passage sub-questions.
     Returns [] if no usable text comes back, so retrieval falls back to the original query."""
     prompt = QUERY_DECOMPOSITION_PROMPT.format(query=query, max_subs=MAX_SUB_QUESTIONS)
     response = client.messages.create(
-        model=ANTHROPIC_MODEL,
+        model=GENERATION_MODEL,
         max_tokens=300,
         thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
@@ -289,7 +291,7 @@ def decompose_query(query: str, client: anthropic.Anthropic) -> list[str]:
 
 
 def multi_hop_retrieve(
-    query: str, client: anthropic.Anthropic, original_chunks: list[dict], k: int = MULTI_HOP_TOP_K
+    query: str, client: LLMClient, original_chunks: list[dict], k: int = MULTI_HOP_TOP_K
 ) -> list[dict]:
     """Retrieve for each sub-question, then interleave the per-question rankings
     (original query first) round-robin, de-duplicating, up to k chunks.
@@ -321,14 +323,14 @@ def build_context(chunks: list[dict]) -> str:
     return "\n\n---\n\n".join(blocks)
 
 
-def generate_answer(query: str, chunks: list[dict], client: anthropic.Anthropic) -> str:
+def generate_answer(query: str, chunks: list[dict], client: LLMClient) -> str:
     context = build_context(chunks)
     user_message = (
         f"Context excerpts:\n\n{context}\n\n---\n\nQuestion: {query}"
     )
 
     response = client.messages.create(
-        model=ANTHROPIC_MODEL,
+        model=GENERATION_MODEL,
         max_tokens=MAX_TOKENS,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
@@ -338,7 +340,7 @@ def generate_answer(query: str, chunks: list[dict], client: anthropic.Anthropic)
 
 def answer_query(query: str, n_results: int = TOP_K) -> dict:
     """Full retrieve-then-generate pipeline. Returns the answer and retrieved chunks."""
-    client = get_anthropic_client()
+    client = get_llm_client()
 
     # Every in-scope strategy starts with a hybrid pass on the original query, so
     # run it while the classifier call is in flight instead of after it. For

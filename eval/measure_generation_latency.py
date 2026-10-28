@@ -22,12 +22,12 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from query_rag import (  # noqa: E402
-    ANTHROPIC_MODEL,
+    GENERATION_MODEL,
     MAX_TOKENS,
     SYSTEM_PROMPT,
     build_context,
     extract_text,
-    get_anthropic_client,
+    get_llm_client,
     hybrid_retrieve,
 )
 
@@ -63,7 +63,7 @@ def main() -> None:
     questions = load_questions(QUESTIONS_PATH)
     assert len(questions) == N_QUERIES, f"expected {N_QUERIES} verified questions, got {len(questions)}"
 
-    client = get_anthropic_client()
+    client = get_llm_client()
     latencies = []
     input_tokens_total = 0
     output_tokens_total = 0
@@ -102,7 +102,7 @@ def main() -> None:
         "n_queries": N_QUERIES,
         "reps": REPS,
         "n_calls": calls_made,
-        "model": ANTHROPIC_MODEL,
+        "model": GENERATION_MODEL,
         "p50_s": percentile(latencies, 0.50),
         "p95_s": percentile(latencies, 0.95),
         "median_s": statistics.median(latencies),
@@ -127,7 +127,7 @@ def _generate_answer_with_usage(query: str, chunks: list[dict], client):
     context = build_context(chunks)
     user_message = f"Context excerpts:\n\n{context}\n\n---\n\nQuestion: {query}"
     response = client.messages.create(
-        model=ANTHROPIC_MODEL,
+        model=GENERATION_MODEL,
         max_tokens=MAX_TOKENS,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],

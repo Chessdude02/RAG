@@ -1,0 +1,73 @@
+{
+  "metrics": {
+    "mean_rouge_l": {
+      "baseline": 0.15954990331899283,
+      "allowed_drop": 0.05,
+      "runs": [
+        0.16038403872336388,
+        0.15871576791462175
+      ]
+    },
+    "mean_semantic_similarity": {
+      "baseline": 0.697185517475009,
+      "allowed_drop": 0.05,
+      "runs": [
+        0.6951578799635172,
+        0.6992131549865007
+      ]
+    },
+    "mean_judge_composite": {
+      "baseline": 0.9633333333333335,
+      "allowed_drop": 0.05,
+      "runs": [
+        0.9633333333333335,
+        0.9633333333333335
+      ]
+    },
+    "redteam_pass_rate": {
+      "baseline": 1.0,
+      "allowed_drop": 0.05,
+      "runs": [
+        1.0,
+        1.0
+      ]
+    },
+    "case_success_rate": {
+      "baseline": 1.0,
+      "allowed_drop": 0.05,
+      "runs": [
+        1.0,
+        1.0
+      ]
+    },
+    "context_recall": {
+      "baseline": 0.8805555555555555,
+      "allowed_drop": 0.05,
+      "runs": [
+        0.875,
+        0.8861111111111111
+      ]
+    },
+    "citation_valid_rate": {
+      "baseline": 0.9,
+      "allowed_drop": 0.05,
+      "runs": [
+        0.9,
+        0.9
+      ]
+    },
+    "claim_support_rate": {
+      "baseline": 0.9603987807844172,
+      "allowed_drop": 0.05,
+      "runs": [
+        0.9564270152505446,
+        0.9643705463182898
+      ]
+    }
+  },
+  "source_runs": [
+    "rag_f8ff1d70e9",
+    "rag_81816b34e1"
+  ],
+  "rule": "baseline = mean of source runs; allowed_drop = max(0.05, 2.0 x (max - min) across source runs); fail if current < baseline - allowed_drop"
+}

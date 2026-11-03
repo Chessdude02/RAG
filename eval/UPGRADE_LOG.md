@@ -4,11 +4,9 @@ Working log for the eval upgrade (branch `eval-upgrade` in both repos). Steps 1â
 
 ## Resume here (next session)
 - **Provider:** Mistral free tier, via `llm_client.py` (identical copy in both repos). Generator `ministral-14b-latest`; default judge `ministral-8b-latest` (Step 2 re-run below). Cost $0.
-- **Next: Step 5** (gate thresholds against a saved baseline + 5 planted failures, one through CI).
-  - The Step 5 code (harness `gate/baseline.py`, `eval/citations.py`, `scripts/make_baseline.py`; here `eval/run_planted_failures.py`) is written but uncommitted.
-  - `eval/planted_failures/*.patch` were made against the old `query_rag.py`: regenerate them. "Smaller model" becomes 14b -> 3b.
-  - `eval/gate_baseline.json` and `eval/results/gate_runs/clean_*` are Claude runs: obsolete, rebuild on Mistral.
-  - The CI secret must become `MISTRAL_API_KEY`.
+- **Step 5 done (2026-11-02): caught 4 of 5 planted failures locally; failure 2 caught in CI.** **Next: Step 6** (README results + limits).
+  - The Claude-era Step 5 runs are kept in `eval/results/gate_runs/obsolete_claude/`.
+  - `eval-gate.yml` checks out harness `main`, which lacks the Step 5 gate code until eval-upgrade is merged there.
 - **Steps 1, 3, 4 numbers below are Claude numbers.** Re-measuring them on Mistral needs the user's go-ahead.
 
 ## Setup
@@ -289,3 +287,41 @@ Binary kappa across rounds: claude-opus-5-5 0.9816011934361014, claude-sonnet-5 
 2. **8B over-uses "contradicted"** (10 vs 6 human); 3B never uses it.
 3. **3B returned invalid JSON once** (strict schema on); a rerun succeeded. In a gate run that is a scoring error and the run fails closed.
 4. **Call counts not preserved:** a later fully cached rerun rewrote the `cost` block (0 API calls, 43 cache hits). Verdicts are identical. Spend was $0.
+
+## Step 5: gate against a saved baseline + planted failures (done 2026-11-02, on Mistral)
+**Gate:** harness `run_eval.py --baseline eval/gate_baseline.json --claim-judge ministral-8b-latest`. Fails if the rolling check (vs last passing run) OR the saved-baseline check fails. New metrics: context_recall, citation_valid_rate, claim_support_rate (harness `ef606d5`).
+
+**Baseline** (`eval/run_planted_failures.py baseline`): two clean runs, rag_6bbc843fc6 and rag_aaff9f705a. Rule fixed before any failure ran: baseline = mean, allowed drop = max(0.05, 2 x spread). Floor = baseline - allowed drop.
+
+| Metric | Baseline | Allowed drop | Floor | Runs |
+|---|---|---|---|---|
+| mean_rouge_l | 0.14172066640796702 | 0.05 | 0.09172066640796701 | 0.1424310351735655, 0.14101029764236853 |
+| mean_semantic_similarity | 0.6778965063393116 | 0.05 | 0.6278965063393116 | 0.6798585936427116, 0.6759344190359116 |
+| mean_judge_composite | 0.9783333333333334 | 0.05 | 0.9283333333333333 | 0.9733333333333334, 0.9833333333333334 |
+| redteam_pass_rate | 0.9583333333333333 | 0.16666666666666674 | 0.7916666666666665 | 1.0, 0.9166666666666666 |
+| case_success_rate | 1.0 | 0.05 | 0.95 | 1.0, 1.0 |
+| context_recall | 0.6615740740740741 | 0.06851851851851887 | 0.5930555555555552 | 0.6444444444444444, 0.6787037037037038 |
+| citation_valid_rate | 0.75 | 0.3999999999999999 | 0.3500000000000001 | 0.85, 0.65 |
+| claim_support_rate | 0.9479487179487179 | 0.05 | 0.8979487179487179 | 0.9358974358974359, 0.96 |
+
+**False alarm:** clean_2 FAILED the rolling check on an unchanged pipeline (redteam_pass_rate 1.0 -> 0.9166666666666666). Both failing red-team cases were correct refusals that ministral-8b misjudged (a hallucination bait answer saying "the context does not contain" the 99.2% claim scored 0/0/0; an over-refusal case scored completeness 0). The user chose to proceed with this baseline as-is.
+
+**Planted failures** (`eval/run_planted_failures.py planted`; each starts from the clean-runs DB snapshot, reverted after; summary `eval/results/planted_failures.json`; patches from `eval/planted_failures/make_patches.py`). **Caught 4 of 5.** Run 1 ran 2026-10-27; runs 2-5 were rerun after the first attempt was killed by the OS-memory reaper mid-run 2 (that partial run was discarded and the patch reverted by hand).
+
+| Failure | Result | context_recall | citation_valid_rate | claim_support_rate | judge_composite | redteam_pass_rate | semantic_sim | n_claims | Baseline check flagged | Rolling check flagged |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1_weaker_prompt | **MISSED** | 0.6750000000000002 | 0.6 | 0.9099099099099099 | 0.9766666666666668 | 0.9583333333333334 | 0.6966491922736168 | 222 | none | none |
+| 2_shuffled_contexts | CAUGHT | 0.6861111111111112 | 0.05 | 0.2 | 0.39666666666666667 | 0.625 | 0.5597335919737816 | 25 | mean_semantic_similarity, mean_judge_composite, redteam_pass_rate, citation_valid_rate, claim_support_rate | mean_semantic_similarity, mean_judge_composite, redteam_pass_rate |
+| 3_top_k_1 | CAUGHT | 0.1074074074074074 | 0.7 | 0.9285714285714286 | 0.9566666666666668 | 0.9583333333333334 | 0.6356335796415806 | 70 | context_recall | none |
+| 4_smaller_model | CAUGHT | 0.813888888888889 | 0.15 | 0.9316239316239316 | 0.97 | 0.8333333333333334 | 0.6942611992359161 | 117 | citation_valid_rate | redteam_pass_rate |
+| 5_no_citation_rule | CAUGHT | 0.6953703703703705 | 0.0 | 0.8618421052631579 | 0.9833333333333334 | 0.9583333333333334 | 0.6621598251163959 | 304 | citation_valid_rate, claim_support_rate | none |
+
+**CI proof:** throwaway branch `ci-planted-failure` (failure 2 applied, harness ref `eval-upgrade`), `workflow_dispatch` run https://github.com/Chessdude02/RAG/actions/runs/41576006895. The "Run eval gate" step failed with exit 1: run rag_d6067123d4, saved-baseline check failed on mean_semantic_similarity 0.5798377022147179, mean_judge_composite 0.2833333333333333, redteam_pass_rate 0.7083333333333334, citation_valid_rate 0.05, claim_support_rate 0.23076923076923078. Rolling check had no history (new cache key), so it passed. 0 claim-scoring errors, $0. Branch deleted afterwards. Workflow change on eval-upgrade: MISTRAL_API_KEY secret, --baseline/--claim-judge/--report, new cache key prefix, report uploaded.
+
+**Caveats for the README:**
+1. **The weaker prompt was missed:** claim_support_rate 0.9099099099099099 vs floor 0.8979487179487179. Faithfulness-only regressions are near the noise floor with the Mistral judge.
+2. **Loose thresholds from 2 noisy runs:** citation_valid_rate floor 0.35 (runs 0.85 / 0.65), redteam_pass_rate allowed drop 0.1667. Two runs is a thin noise estimate.
+3. **A false alarm on a clean run** (judge error), so the rolling check alone would block a clean change about as readily as a broken one.
+4. **Top-k=1 was caught only by context_recall** and no-citation-rule only by citation_valid_rate + claim_support_rate. The old metrics (rouge, semantic similarity, composite judge) caught only the blatant shuffled-contexts failure.
+5. **The smaller model raised context_recall** (0.813888888888889); unverified guess: the 3B classifier sends more questions down the multi-hop path (8 chunks).
+6. **CI only exercised the saved-baseline check;** the rolling check had no history there.

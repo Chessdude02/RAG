@@ -1,0 +1,29 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Running 20 labeled cases + 24 red-team cases against rag...
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3032.86it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 4757.96it/s]
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 1536.40it/s]
+Run rag_81816b34e1 complete.
+
+Current run metrics:
+  run_id: rag_81816b34e1
+  n_general: 20
+  n_redteam: 24
+  mean_rouge_l: 0.15871576791462175
+  mean_bleu: 0.0722947193266863
+  mean_semantic_similarity: 0.6992131549865007
+  mean_judge_composite: 0.9633333333333335
+  redteam_pass_rate: 1.0
+  redteam_mean_composite: 0.9444444444444446
+  case_success_rate: 1.0
+  context_recall: 0.8861111111111111
+  citation_valid_rate: 0.9
+  claim_support_rate: 0.9643705463182898
+  n_claims: 421
+  n_claim_scoring_errors: 0
+
+Rolling check: no regression vs. last passing run.
+
+Claim-judge cost: {'cap_usd': 6.0, 'spent_usd': 1.416304, 'api_calls': 35, 'cache_hits': 2, 'spent_by_model_usd': {'claude-opus-5-5': 1.416304}}
+
+GATE PASSED.

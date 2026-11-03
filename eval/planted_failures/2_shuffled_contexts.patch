@@ -1,0 +1,24 @@
+diff --git a/scripts/query_rag.py b/scripts/query_rag.py
+index dac3353..ad86115 100644
+--- a/scripts/query_rag.py
++++ b/scripts/query_rag.py
+@@ -73,6 +73,7 @@ e.g. [source: paper_title, chunk_2][source: paper_title, chunk_5]."""
+ _embedding_model = None
+ _collection = None
+ _bm25_index = None
++_previous_chunks = None  # PLANTED FAILURE: generation gets the previous query's chunks
+ _bm25_chunks = None
+ _cross_encoder = None
+ # Runs retrieval for the original query while the classifier call is in flight.
+@@ -364,7 +365,10 @@ def answer_query(query: str, n_results: int = TOP_K) -> dict:
+         chunks = multi_hop_retrieve(query, client, original_chunks)
+     else:
+         chunks = original_chunks[:n_results]
+-    answer = generate_answer(query, chunks, client)
++    global _previous_chunks
++    generation_chunks = _previous_chunks or chunks
++    _previous_chunks = chunks
++    answer = generate_answer(query, generation_chunks, client)
+     return {"query": query, "answer": answer, "classification": classification, "chunks": chunks}
+ 
+ 

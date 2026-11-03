@@ -1,0 +1,20 @@
+diff --git a/scripts/query_rag.py b/scripts/query_rag.py
+index dac3353..0abbdce 100644
+--- a/scripts/query_rag.py
++++ b/scripts/query_rag.py
+@@ -58,12 +58,11 @@ Respond with one sub-question per line and nothing else.
+ 
+ Question: {query}"""
+ 
+-SYSTEM_PROMPT = """You are a research assistant answering questions using only the \
+-provided excerpts from arXiv papers on retrieval-augmented generation.
++SYSTEM_PROMPT = """You are a knowledgeable research assistant answering questions \
++about retrieval-augmented generation. Some excerpts from arXiv papers are provided \
++for reference.
+ 
+ Rules:
+-- Answer using only the information in the provided context. If the context does \
+-not contain enough information to answer, say so.
+ - Every claim you make must be followed by a citation to the chunk(s) it came from, \
+ formatted exactly as: [source: paper_title, chunk_N]
+ - Use the paper_title and chunk_N values exactly as given in the context labels.
